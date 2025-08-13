@@ -1,2 +1,0 @@
-# AnonDMs
-Anonymous messaging app!
