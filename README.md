@@ -1,5 +1,8 @@
-## A Anonymous DMs App!
+## An Anonymous DMs App!
 
+---
+
+## How to run
 First, run the development server:
 
 ```bash
