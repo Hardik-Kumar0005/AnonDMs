@@ -1,37 +1,43 @@
-## An Anonymous DMs App!
+<div align="center">
+
+# AnonDMs
+
+Anonymous, privacy‑minded messaging platform with modern, type‑safe tooling.
+
+</div>
 
 ---
 
-## How to run
-First, run the development server:
+## 🚀 Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+| Layer | Tech |
+|-------|------|
+| Framework | Next.js (App Router, Edge runtime for streaming) |
+| Language | TypeScript |
+| Database | PostgreSQL |
+| ORM | Prisma + Accelerate (Data Proxy) |
+| Auth | next-auth (email verification + credentials) |
+| Validation | Zod |
+| Email | Resend |
+| Security | bcryptjs password hashing, verification codes |
+| AI (optional) | Vercel AI SDK + OpenAI (question & prompt suggestions) |
+| Styling | Tailwind CSS 4 / PostCSS |
+| Tooling | ESLint, TypeScript strict mode |
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Email + username based signup with verification code & expiry
+- Secure credential sign‑in (hashed passwords)
+- Username availability & validation
+- Toggle for accepting / pausing anonymous messages
+- Anonymous message submission with server-side validation
+- Relational message storage (`User` ↔ `Message[]`)
+- AI‑generated or curated suggested questions (Edge streaming)
+- Fallback suggestions when AI key absent
+- Basic rate limiting & content filtering for suggestion endpoint
+- Consistent JSON response envelope
+- Strong input validation via Zod across APIs
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> Focused README variant: intentionally limited to tech stack + features per request.

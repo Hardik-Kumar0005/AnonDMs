@@ -79,7 +79,7 @@ function page() {
     <div className='grid self-center bg-indigo-500 w-screen h-screen text-white'>
       <div className='flex flex-col justify-center items-center'>
         <div className='bg-green-800 rounded-4xl w-auto h-auto'>
-        <p className='mt-2'>
+        <p className='mt-2 text-3xl'>
           Don't have an account? <Link href="/signup">Sign up</Link>
         </p>
         </div>

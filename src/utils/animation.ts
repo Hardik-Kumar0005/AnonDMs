@@ -15,7 +15,7 @@ export const animatePageIn = () => {
             xPercent: 0 
         }).to([b1, b2, b3, b4], {
             xPercent: -100,
-            stagger: 0.2
+            stagger: 0.1
         });
     } 
 }
@@ -32,7 +32,7 @@ export const animatePageOut = (href: string, router: AppRouterInstance) => {
 
         tl.to([b1, b2, b3, b4], {
             xPercent: 100,
-            stagger: 0.2,
+            stagger: 0.1,
             onComplete: () => {
                 router.push(href);
             }
