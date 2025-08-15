@@ -20,8 +20,9 @@ Anonymous, privacy‑minded messaging platform with modern, type‑safe tooling.
 | Validation | Zod |
 | Email | Resend |
 | Security | bcryptjs password hashing, verification codes |
-| AI (optional) | Vercel AI SDK + OpenAI (question & prompt suggestions) |
+| AI | Vercel AI SDK + OpenAI (question & prompt suggestions) |
 | Styling | Tailwind CSS 4 / PostCSS |
+| Animations | GSAP |
 | Tooling | ESLint, TypeScript strict mode |
 
 ## ✨ Features
@@ -39,5 +40,3 @@ Anonymous, privacy‑minded messaging platform with modern, type‑safe tooling.
 - Strong input validation via Zod across APIs
 
 ---
-
-> Focused README variant: intentionally limited to tech stack + features per request.
