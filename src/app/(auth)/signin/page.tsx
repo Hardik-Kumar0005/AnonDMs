@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation"
 import { signUpSchema } from '@/schemas/signUpSchema'
 import axios, { AxiosError } from 'axios'
 import { ApiResponse } from '@/types/ApiResponse'
+import Navigation from '@/utils/Navigation'
 
 function page() {
   const [ username, setUsername ] = React.useState("");
@@ -76,15 +77,22 @@ function page() {
   }
 
   return (
+    <>
     <div className='grid self-center bg-indigo-500 w-screen h-screen text-white'>
       <div className='flex flex-col justify-center items-center'>
         <div className='bg-green-800 rounded-4xl w-auto h-auto'>
         <p className='mt-2 text-3xl'>
-          Don't have an account? <Link href="/signup">Sign up</Link>
+          Don't have an account? 
         </p>
         </div>
       </div>
     </div>
+    <div className='fixed z-10 top-3/4 left-1/3'>
+          <Navigation href="/signup" label="Sign up" className='bg-green-500 rounded-2xl p-2'>
+            <h3 className='text-lg font-semibold'>Sign up</h3>
+          </Navigation>
+    </div>
+      </>
   )
 }
 

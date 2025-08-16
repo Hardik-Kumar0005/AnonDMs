@@ -13,7 +13,7 @@ const TransitionLink: React.FC<Props> = ({ href, label }: Props) => {
     const pathname = usePathname();
 
     const handleClick = () => {
-        if(pathname !== href) {
+        if(pathname != href) {
             animatePageOut(href, router);
         }
     }
@@ -21,7 +21,7 @@ const TransitionLink: React.FC<Props> = ({ href, label }: Props) => {
     return (
         <button 
         onClick={handleClick} 
-        className="text-xl text-neutral-800 hover:text-neutral-700"
+        className="text-xl text-neutral-900 hover:text-neutral-600 bg-green-500 rounded-4xl p-1"
         >
             {label}
         </button>

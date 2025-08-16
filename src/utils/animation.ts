@@ -1,5 +1,4 @@
 import { gsap } from "gsap";
-import App from "next/app";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export const animatePageIn = () => {
@@ -30,8 +29,10 @@ export const animatePageOut = (href: string, router: AppRouterInstance) => {
     if( b1 && b2 && b3 && b4 ) {
         const tl = gsap.timeline();
 
-        tl.to([b1, b2, b3, b4], {
-            xPercent: 100,
+        tl.set([b1, b2, b3, b4], { 
+            xPercent: -100 
+        }).to([b1, b2, b3, b4], {
+            xPercent: 0,
             stagger: 0.1,
             onComplete: () => {
                 router.push(href);
