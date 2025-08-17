@@ -1,6 +1,7 @@
 "use client"
 
-import React from 'react'
+import React, { Suspense } from 'react'
+import Image from 'next/image'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -157,7 +158,11 @@ function page() {
             {
               isSubmitting? (
                 <>
-                  <h1 className='mr-2'>Please wait</h1>
+                  <Suspense fallback={
+                    <h1>Loading....</h1>
+                  }>
+                    <Image src="/loading.gif" alt="Loading..." width={24} height={24} />
+                  </Suspense>
                 </>
               ):("Sign up")
             }
