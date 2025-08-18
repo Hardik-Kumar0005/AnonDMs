@@ -80,11 +80,17 @@ function page() {
 
   return (
     <>
-    <div className='grid self-center bg-indigo-500 w-screen h-screen text-white'>
-      <div className='flex flex-col justify-center left-1/2 items-center bottom-2/3'>
-        <div className='bg-green-900 rounded-lg w-auto h-auto p-4 text-center'>
+    <div className='relative min-h-screen w-screen overflow-hidden bg-gradient-to-br from-indigo-900 via-indigo-600 to-purple-600 text-white flex items-center justify-center'>
+      {/* decorative blurred blobs */}
+      <div className='absolute -left-24 -top-24 w-72 h-72 rounded-full bg-pink-500 opacity-30 blur-3xl animate-blob mix-blend-plus-lighter'></div>
+      <div className='absolute -right-24 -bottom-24 w-96 h-96 rounded-full bg-cyan-400 opacity-25 blur-3xl animate-blob animation-delay-2000 mix-blend-plus-lighter'></div>
+
+      <div className='z-10 flex w-full items-center justify-center p-6'>
+        <div className='flex w-full max-w-4xl items-stretch justify-center gap-6'>
+          {/* signup card (left) */}
+          <div className='w-full max-w-md bg-white/8 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-6 transition-transform transform hover:-translate-y-1'>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col items-center justify-center gap-4 p-4'>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col items-stretch justify-center gap-4'>
           {/* //Username */}
           <FormField
             control={form.control}
@@ -93,13 +99,13 @@ function page() {
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl>
-                <input {...field} 
+                <input {...field}
                 placeholder="Username"
                 onChange={(e) => {
                   field.onChange(e);
                   setUsername(e.target.value);
                 }}
-                className='border p-2 rounded-lg' />
+                className='w-full bg-white/5 placeholder:text-white/60 text-white py-2 px-3 rounded-md border border-white/8 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-shadow' />
 
                 </FormControl>
                 <FormDescription>
@@ -117,9 +123,9 @@ function page() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                <input {...field} 
+                <input {...field}
                 placeholder="anon11@dms.com"
-                className='border p-2 rounded-lg' 
+                className='w-full bg-white/5 placeholder:text-white/60 text-white py-2 px-3 rounded-md border border-white/8 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-shadow' 
                 />
 
                 </FormControl>
@@ -138,10 +144,10 @@ function page() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                <input {...field} 
+                <input {...field}
                 type="password"
                 placeholder="Password"
-                className='border p-2 rounded-lg' 
+                className='w-full bg-white/5 placeholder:text-white/60 text-white py-2 px-3 rounded-md border border-white/8 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-shadow' 
                 />
 
                 </FormControl>
@@ -154,7 +160,8 @@ function page() {
             />
           <Button 
           type="submit" 
-          disabled={isSubmitting}>
+          disabled={isSubmitting}
+          className='w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:scale-105 active:scale-100 transform transition-all shadow-lg text-white'>
             {
               isSubmitting? (
                 <>
@@ -168,14 +175,28 @@ function page() {
             }
           </Button>
         </form>
-      </Form>
+          </Form>
+            </div>
+
+          {/* divider with slash */}
+          <div className='hidden md:flex items-center justify-center px-2'>
+            <div className='flex flex-col items-center'>
+              <div className='h-24 flex items-center'>
+                <span className='text-4xl text-white/60 select-none'>/</span>
+              </div>
             </div>
           </div>
-    </div>
-    <div className='absolute bottom-1/3 left-1/3 transform -translate-x-1/2 size-28'>
-          <Navigation href="/signin" label="Sign in" className='bg-green-500 rounded-2xl p-2'>
-            <h3 className='font-semibold'>Sign in</h3>
-          </Navigation>
+
+          {/* sign-in card (right) */}
+          <div className='hidden md:flex flex-col items-center justify-center w-56'>
+            <Navigation href="/signin" label="Sign in" className='text-amber-700'>
+              <h3 className='font-semibold text-white mb-1'>Sign in</h3>
+              <p className='text-sm text-white/80'>Already have an account?</p>
+            </Navigation>
+          </div>
+
+        </div>
+      </div>
     </div>
       </>
   )

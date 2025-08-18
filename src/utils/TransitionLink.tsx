@@ -9,7 +9,7 @@ interface Props {
 }
 
 const TransitionLink: React.FC<Props> = ({ href, label }: Props) => {
-    const router = useRouter();
+    const router = useRouter(); 
     const pathname = usePathname();
 
     const handleClick = () => {
@@ -21,7 +21,9 @@ const TransitionLink: React.FC<Props> = ({ href, label }: Props) => {
     return (
         <button 
         onClick={handleClick} 
-        className="text-xl text-neutral-900 hover:text-neutral-600 bg-green-500 rounded-4xl p-1"
+        className="text-xl text-neutral-900 hover:text-green-400 p-1 hover:text-2xl transition-all duration-300 ease-in-out rounded-lg active:scale-95
+        /*Note to self: FIX CSS HERE*/
+        w-full flex flex-col items-center justify-center bg-white/6 backdrop-blur-sm border border-white/10 rounded-2xl p-4 px-6 hover:scale-105 transition transform"
         >
             {label}
         </button>
@@ -29,3 +31,4 @@ const TransitionLink: React.FC<Props> = ({ href, label }: Props) => {
 }
 
 export default TransitionLink;
+    
