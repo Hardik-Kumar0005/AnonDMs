@@ -10,19 +10,24 @@ const usernameQuerySchema = z.object({
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
-        const queryParam = { username: searchParams.get("username") };
-
-        const validation = usernameQuerySchema.safeParse({ queryParam });
+        const raw = searchParams.get("username");
+        if (!raw) {
+            return Response.json({
+                success: false,
+                message: "Username query param is required"
+            }, { status: 400 });
+        }
+        const candidate = raw.trim();
+        const validation = usernameQuerySchema.safeParse({ username: candidate });
         if (!validation.success) {
-            const usernameErrors = validation.error.format().username?._errors || [];
             return Response.json({
                 success: false,
                 message: "Invalid username",
-                errors: usernameErrors
+                errors: validation.error.flatten().fieldErrors.username || []
             }, { status: 400 });
         }
 
-        const { username } = validation.data;
+        const { username } = validation.data; // validated value
         const user = await prisma.user.findUnique({
             where: { username }
         });

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import Link from "next/link"
-import { useDebounceValue } from 'usehooks-ts'
+import { useDebounceCallback, useDebounceValue } from 'usehooks-ts'
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { signUpSchema } from '@/schemas/signUpSchema'
@@ -23,6 +23,7 @@ function page() {
   const [ isSubmitting, setIsSubmitting ] = React.useState(false);
   const [debouncedUsername] = useDebounceValue(username, 300);
   const router = useRouter();
+  const debounced = useDebounceCallback(setUsername, 300);
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -39,7 +40,7 @@ function page() {
         setLoading(true);
         setUsernameMessage("");
         try{
-          const response = await axios.get(`/api/users/check-username?username=${debouncedUsername}`);
+          const response = await axios.get(`/api/check-username?username=${debouncedUsername}`);
           console.log (response);
           setUsernameMessage(response.data.message);
         }
@@ -48,7 +49,7 @@ function page() {
             if (error.response?.status === 409) {
               setUsernameMessage("Username is already taken");
             } else {
-              setUsernameMessage("Error checking username");
+              setUsernameMessage(error.response?.data.message || "An error occurred while checking username");
             }
           }
         }
@@ -103,7 +104,7 @@ function page() {
                 placeholder="Username"
                 onChange={(e) => {
                   field.onChange(e);
-                  setUsername(e.target.value);
+                  debounced(e.target.value);
                 }}
                 className='w-full bg-white/5 placeholder:text-white/60 text-white py-2 px-3 rounded-md border border-white/8 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-shadow' />
 
@@ -111,6 +112,10 @@ function page() {
                 <FormDescription>
                   This is your unique username
                 </FormDescription>
+                { loading }
+                <p className={`text-sm ${usernameMessage === "Username is available" ? "text-green-500" : "text-red-500"} mt-1`}>
+                  {usernameMessage}
+                </p>
                 <FormMessage/>                
               </FormItem>
             )} 
