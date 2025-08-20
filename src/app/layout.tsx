@@ -30,7 +30,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-  <Navigation href="/signup" label="Sign up" className="fixed right-1 z-100 border-amber-500 border-8 w-fit" />
+  <Navigation href="/signup" label="Sign up" className="fixed right-0 z-100 border-amber-500 border-8 w-fit" />
   <Navigation href="/" label="Home" className="fixed z-100 border-amber-500 border-8 w-fit" />
   <PageTransitionController />
   {children}

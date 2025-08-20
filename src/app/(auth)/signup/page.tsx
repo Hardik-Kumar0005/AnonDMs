@@ -81,15 +81,16 @@ function page() {
 
   return (
     <>
-    <div className='relative min-h-screen w-screen overflow-hidden bg-gradient-to-br from-indigo-900 via-indigo-600 to-purple-600 text-white flex items-center justify-center'>
+    <div className='relative min-h-screen w-screen overflow-hidden text-white flex items-center justify-center'>
       {/* decorative blurred blobs */}
-      <div className='absolute -left-24 -top-24 w-72 h-72 rounded-full bg-pink-500 opacity-30 blur-3xl animate-blob mix-blend-plus-lighter'></div>
-      <div className='absolute -right-24 -bottom-24 w-96 h-96 rounded-full bg-cyan-400 opacity-25 blur-3xl animate-blob animation-delay-2000 mix-blend-plus-lighter'></div>
+      <div className='absolute -left-24 -top-24 w-44 h-44 sm:w-56 sm:h-56 md:w-72 md:h-72 rounded-full bg-pink-500 opacity-30 blur-3xl animate-blob mix-blend-plus-lighter'></div>
+      <div className='absolute -right-24 -bottom-24 w-52 h-52 sm:w-72 sm:h-72 md:w-96 md:h-96 rounded-full bg-cyan-400 opacity-25 blur-3xl animate-blob animation-delay-2000 mix-blend-plus-lighter'></div>
 
       <div className='z-10 flex w-full items-center justify-center p-6'>
-        <div className='flex w-full max-w-4xl items-stretch justify-center gap-6'>
+        <div className='flex flex-col md:flex-row w-full max-w-4xl items-stretch justify-center gap-6'>
           {/* signup card (left) */}
-          <div className='w-full max-w-md bg-white/8 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-6 transition-transform transform hover:-translate-y-1'>
+          <div className='w-full max-w-md bg-white/8 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-6 transition-transform transform hover:-translate-y-1 z-10'>
+              <h2 className='text-3xl font-bold text-center text-black mb-6 tracking-wide drop-shadow-lg'>SIGN UP!</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col items-stretch justify-center gap-4'>
           {/* //Username */}
@@ -182,23 +183,29 @@ function page() {
         </form>
           </Form>
             </div>
+            <Image
+              src="/loading.gif"
+              alt="Loading..."
+              width={550}
+              height={150}
+              className='absolute z-0 right-16'
+            />
 
-          {/* divider with slash */}
-          <div className='hidden md:flex items-center justify-center px-2'>
+          {/* divider with slash
+          <div className='hidden md:flex items-center justify-center px-2 mx-auto'>
             <div className='flex flex-col items-center'>
               <div className='h-24 flex items-center'>
-                <span className='text-4xl text-white/60 select-none'>/</span>
+                <span className='text-4xl text-black/60 select-none'>/</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* sign-in card (right) */}
-          <div className='hidden md:flex flex-col items-center justify-center w-56'>
+            <div className='flex flex-col items-center justify-center w-full md:w-56 mx-auto mt-4 md:mt-0 order-2 md:order-none z-10'>
+            <p className='text-sm text-black'>Already have an account?</p>
             <Navigation href="/signin" label="Sign in" className='text-amber-700'>
-              <h3 className='font-semibold text-white mb-1'>Sign in</h3>
-              <p className='text-sm text-white/80'>Already have an account?</p>
             </Navigation>
-          </div>
+            </div>
 
         </div>
       </div>
