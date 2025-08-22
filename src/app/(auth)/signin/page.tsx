@@ -32,14 +32,14 @@ function page() {
 
     if (result?.error) {
       if (result.error === 'CredentialsSignin') {
-        toast.success('Login Successful');
+        toast.success('Login Failed! Please recheck your credentials!');
       } else {
-        toast.error('Please recheck your credentials!');
+        toast.error(`Login Failed! ${result.error}`);
       }
 
   };
   if (result?.url) {
-      router.replace('/');
+      router.replace('/dashboard');
     }
   };
 
@@ -51,7 +51,7 @@ function page() {
           <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
             Anon DMs
           </h1>
-          <p className="mb-4">Sign in to continue your secret conversations</p>
+          <p className="mb-4">Sign in to continue your secret convos</p>
         </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -82,7 +82,7 @@ function page() {
         </Form>
         <div className="text-center mt-4">
           <p>
-            Not a member yet?{' '}
+            Don't have an account?{' '}
             <Link href="/signup" className="text-blue-600 hover:text-blue-800">
               Sign up
             </Link>
