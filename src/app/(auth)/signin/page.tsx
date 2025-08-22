@@ -1,17 +1,16 @@
-"use client";
+'use client';
 
-import React from 'react'
-import { useForm } from 'react-hook-form';
-import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-import { signInSchema } from '@/schemas/signInSchema';
-import axios from 'axios';
-import { ApiResponse } from '@/types/ApiResponse';
-import * as z from 'zod';
-import { toast } from 'sonner';
-import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { signIn } from 'next-auth/react';
+import { Form, FormField, FormItem, FormLabel, FormMessage, } from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+// import { Input } from '@/components/ui/input';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { signInSchema } from '@/schemas/signInSchema';
 
 function page() {
   const form = useForm({
@@ -25,20 +24,25 @@ function page() {
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
 
+    const result = await signIn("credentials", {
+      redirect: false,
+      identifier: data.identifier,
+      password: data.password
+    });
 
-    try{
-      const response = await axios.post<ApiResponse>("/api/signin", {
-        identifier: data.identifier,
-        password: data.password
-      });
-      toast.success(response.data.message);
-      router.replace(`/`);
-    }
-    catch(error){
-      console.error("Error signing in:", error);
-      toast.error("Failed to sign in");
+    if (result?.error) {
+      if (result.error === 'CredentialsSignin') {
+        toast.success('Login Successful');
+      } else {
+        toast.error('Please recheck your credentials!');
+      }
+
+  };
+  if (result?.url) {
+      router.replace('/');
     }
   };
+
 
   return (
       <div className="flex justify-center items-center min-h-screen bg-gray-800">
@@ -79,7 +83,7 @@ function page() {
         <div className="text-center mt-4">
           <p>
             Not a member yet?{' '}
-            <Link href="/sign-up" className="text-blue-600 hover:text-blue-800">
+            <Link href="/signup" className="text-blue-600 hover:text-blue-800">
               Sign up
             </Link>
           </p>
