@@ -19,14 +19,12 @@ const TransitionLink: React.FC<Props> = ({ href, label }: Props) => {
     }
 
     return (
-        <button 
+        <div 
         onClick={handleClick} 
-        className="text-xl text-neutral-900 hover:text-green-400 p-1 hover:text-2xl transition-all duration-300 ease-in-out rounded-lg active:scale-95
-        /*Note to self: FIX CSS HERE*/
-        w-full flex flex-col items-center justify-center bg-white/6 backdrop-blur-sm border border-white/10 rounded-2xl p-4 px-6 hover:scale-105 transition transform"
+        className=""
         >
             {label}
-        </button>
+        </div>
     )
 }
 
