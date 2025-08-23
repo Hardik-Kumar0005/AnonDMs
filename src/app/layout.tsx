@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import Navigation from "@/utils/Navigation";
-import './globals.css';
 import PageTransitionController from "@/components/PageTransitionController";
 
 const geistSans = Geist({
@@ -30,8 +30,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-  <Navigation href="/signup" label="Sign up" className="fixed right-0 z-100 border-amber-500 border-8 w-fit" />
-  <Navigation href="/" label="Home" className="fixed z-100 border-amber-500 border-8 w-fit" />
   <PageTransitionController />
   {children}
         <Toaster />

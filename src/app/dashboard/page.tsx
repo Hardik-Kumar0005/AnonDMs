@@ -1,10 +1,14 @@
 import React from 'react'
+import Navbar from './Navbar'
 
 function page() {
   return (
-    <div>
-      
-    </div>
+    <>
+      <Navbar />
+      <div className='flex p-4 mt-20 justify-center items-center'>
+        DASHBOARD
+      </div>
+    </>
   )
 }
 
