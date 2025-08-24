@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { signInSchema } from '@/schemas/signInSchema';
+import { animatePageIn, animatePageOut } from '@/utils/animation';
 
 function page() {
   const form = useForm({
@@ -22,7 +23,10 @@ function page() {
   });
   const router = useRouter();
 
+
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+    
+    animatePageOut('/dashboard', router);
 
     const result = await signIn("credentials", {
       redirect: false,

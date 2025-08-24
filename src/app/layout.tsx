@@ -4,6 +4,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import Navigation from "@/utils/Navigation";
 import PageTransitionController from "@/components/PageTransitionController";
+import { SessionProvider } from "next-auth/react";
+import AuthProvider from "@/context/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,9 +31,11 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+        >
   <PageTransitionController />
+        <AuthProvider>
   {children}
+  </AuthProvider>
         <Toaster />
       </body>
     </html>

@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { User as UserModel } from "@prisma/client";
 import { User } from "next-auth";
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
