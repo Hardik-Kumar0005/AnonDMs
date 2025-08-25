@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import Navigation from "@/utils/Navigation";
-import PageTransitionController from "@/components/PageTransitionController";
+import PageTransitionController from "@/utils/PageTransitionController";
 import { SessionProvider } from "next-auth/react";
 import AuthProvider from "@/context/AuthProvider";
 

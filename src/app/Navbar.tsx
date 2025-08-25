@@ -1,4 +1,4 @@
-import PageTransitionController from '@/components/PageTransitionController'
+import PageTransitionController from '@/utils/PageTransitionController'
 import Navigation from '@/utils/Navigation'
 import React from 'react'
 

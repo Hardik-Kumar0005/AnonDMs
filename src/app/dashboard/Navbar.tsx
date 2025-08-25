@@ -26,9 +26,9 @@ function Navbar() {
 
 
             {/* REPLACE WITH ACCEPT MESSAGES TOGGLE BUTTON */}
-            <div className="justify-self-end">
-              <Button variant="outline" className="justify-self-end bg-cyan-400 rounded-2xl ml-auto hover:bg-blue-400 mr-2">
-                Accept Messages
+            <div className="flex flex-col md:block justify-self-end justify-end items-end">
+              <Button variant="outline" className="justify-self-end bg-cyan-400 rounded-2xl ml-auto hover:bg-blue-400 mr-2 sm:text-nowrap text-wrap">
+                Accept DMs
               </Button>
 
               <Button 
