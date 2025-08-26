@@ -66,9 +66,10 @@ React.useEffect(() => {
 
   return (
     <>
+
       <Navbar />
       <div className='fixed left-1/2 transform -translate-x-1/2'>
-        <Image draggable="false" style={{ 
+        <Image draggable="false" style={{
             pointerEvents: 'none',
             userSelect: 'none',
             MozUserSelect: 'none',
@@ -76,7 +77,7 @@ React.useEffect(() => {
          }}
           src="/dashArrow.png" alt="Description" width={300} height={300} />
       </div>
-      <div className='w-screen h-screen flex p-4 justify-center items-center'>
+      <div className='w-screen h-screen flex p-4 justify-center items-center z-100'>
         DASHBOARD
         fetch messages and display here
         <br />
@@ -87,6 +88,8 @@ React.useEffect(() => {
         ))}
         </span>
       </div>
+
+      
     </>
   )
 }

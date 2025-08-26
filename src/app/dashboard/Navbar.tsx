@@ -5,6 +5,7 @@ import Navigation from "@/utils/Navigation"
 import { useSession, signOut, SessionProvider } from "next-auth/react";
 import { User } from 'next-auth';
 import { animatePageIn } from "@/utils/animation";
+import { motion } from 'motion/react';
 
 
 

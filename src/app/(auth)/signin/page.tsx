@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { signInSchema } from '@/schemas/signInSchema';
 import { animatePageIn, animatePageOut } from '@/utils/animation';
+import { motion } from 'motion/react';
 
 function page() {
   const form = useForm({
@@ -49,8 +50,13 @@ function page() {
 
 
   return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-800">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+      <div
+      className="flex justify-center items-center min-h-screen bg-gray-800">
+      <motion.div 
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      transition={{ duration: 1 }}
+      className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
             Anon DMs
@@ -92,7 +98,7 @@ function page() {
             </Link>
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
