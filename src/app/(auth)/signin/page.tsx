@@ -55,17 +55,18 @@ function page() {
   return (
       <div
       className="flex justify-center items-center min-h-screen bg-cyan-800/60">
-      <motion.div 
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{ duration: 1 }}
+      <div 
       className="w-full max-w-md md:p-8 p-4 space-y-8 bg-transparent rounded-lg">
         <div className="text-center">
-            <div className="inline-block rounded-full shadow-lg px-8 py-4 mb-6 border-2 border-black">
+            <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1 }}
+            className="inline-block rounded-full shadow-lg px-8 py-4 mb-6 border-2 border-black">
             <h1 className={`text-6xl font-extrabold tracking-tight lg:text-8xl text-gray-800 ${singleDay.className}`}>
               Anon DMs
             </h1>
-            </div>
+            </motion.div>
           <p className="mb-4">Sign in to continue your secret convos</p>
         </div>
         <Form {...form}>
@@ -78,13 +79,17 @@ function page() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email/Username</FormLabel>
-                  <motion.input
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 1 }}
+                  <FormLabel>
+                    <motion.p
+                    initial={{ opacity: 0,  }}
+                    animate={{ opacity: 1,  }}
+                    transition={{ duration: 2 }}
+                    className='text-2xl'
+                    >Email / Username</motion.p>
+                  </FormLabel>
+                  <input
                     {...field}
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 border-2 border-black rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   />
                   <FormMessage />
                 </FormItem>
@@ -95,11 +100,18 @@ function page() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>
+                    <motion.p
+                    initial={{ opacity: 0,  }}
+                    animate={{ opacity: 1,  }}
+                    transition={{ duration: 2 }}
+                    className='text-2xl'
+                    >Password </motion.p>
+                  </FormLabel>
                   <input
                     type="password"
                     {...field}
-                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 border-2 border-black rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   />
                   <FormMessage />
                 </FormItem>
@@ -114,8 +126,11 @@ function page() {
           </form>
         </Form>
         <div className="text-center mt-32">
-          <div className="-mt-28 flex justify-evenly">
-            <Image
+            <div className="-mt-28 flex justify-evenly">
+              <motion.img
+              initial={{ clipPath: 'inset(0 0 100% 0)', opacity: 0 }}
+              animate={{ clipPath: 'inset(0 0% 0% 0)', opacity: 1 }}
+              transition={{ duration: 4, ease: 'easeOut' }}
               draggable={false}
               style={{
                 pointerEvents: 'none',
@@ -127,8 +142,8 @@ function page() {
               alt="Description"
               width={50}
               height={50}
-            />
-          </div>
+              />
+            </div>
           <p className={`text-gray-600 text-2xl font-${400} ${singleDay.className}`}>
             Don't have an account?{' '}
             <br />
@@ -137,7 +152,7 @@ function page() {
             </Link>
           </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

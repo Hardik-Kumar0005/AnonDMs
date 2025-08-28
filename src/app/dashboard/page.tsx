@@ -78,12 +78,11 @@ React.useEffect(() => {
          }}
           src="/dashArrow.png" alt="Description" width={300} height={300} />
       </div>
-      <div className='w-screen min-h-screen flex flex-col p-4 justify-center sm:justify-start sm:ml-auto sm:mr-auto sm:pt-48 items-center z-100 sm:mt-12 mt-8 overflow-x-auto max-w-fit '>
-        DASHBOARD
-        fetch messages and display here
+      <div className='w-screen min-h-screen flex flex-col p-4 justify-center sm:justify-start sm:ml-auto sm:mr-auto sm:pt-48 mx-auto items-center z-100 sm:mt-12 mt-8 overflow-x-auto max-w-fit overflow-y-auto'>
+
         <br />
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-12 sm:w-full max-w-2xl max-h-1/2 sm:max-w-screen items-center justify-center'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-12 sm:w-fit max-w-2xl max-h-1/2 sm:max-w-screen items-center justify-center overflow-visible'>
           {messages.map(message => (
             <MessageCard key={message.id} message={message} />
           ))}

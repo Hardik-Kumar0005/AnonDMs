@@ -6,28 +6,87 @@ import { useSession, signOut, SessionProvider } from "next-auth/react";
 import { User } from 'next-auth';
 import { animatePageIn } from "@/utils/animation";
 import { motion } from 'motion/react';
+import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import axios from "axios";
+import { ApiResponse } from "@/types/ApiResponse";
 
 
 
 function Navbar() {
     const { data: session } = useSession();
     const user:User = session?.user as User;
+    const deleteAll = async () => {
+    try {
+      const response = await axios.delete<ApiResponse>(`/api/delete-all-messages/`);
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  }
 
   return (
-    <div className="sticky top-0 left-0 right-0 z-50 grid grid-cols-3 items-center px-2 py-2 bg-transparent ">
-              <Button variant="outline" className="justify-self-start mr-auto bg-cyan-400 rounded-2xl ml-2">
-            <Navigation href="/" label="Home" className="" /> 
-
+    <div className="sticky top-0 left-0 right-0 z-50 grid grid-cols-3 place-items-center px-2 py-2 bg-transparent mt-1 backdrop-blur-3xl rounded-3xl">
+              <div className="flex flex-col md:block justify-self-start justify-start items-start gap-2">
+              
+              <Button variant="outline" className="justify-self-end bg-cyan-400 rounded-2xl ml-auto hover:bg-white mr-2 sm:text-nowrap text-wrap">
+                <Navigation href="/" label="Home" className="" />
               </Button>
 
+
+<AlertDialog>
+  <AlertDialogTrigger className="inline-flex items-center ml-2 p-1 hover:bg-red-400 hover:rounded-t-2xl hover:border hover:rounded-br-2xl hover:scale-120 ">
+    <p className="text-black mr-2">Delete All</p>
+    <Trash2 className="text-black w-5 h-5" />
+  </AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+
+      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+      <AlertDialogDescription>
+        This action cannot be undone. This will permanently delete your account
+        and remove your data from our servers.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <AlertDialogAction onClick={deleteAll}>Continue</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+
+
+
+              
+            </div>
+
               {/* REPLACE WITH URL COPY BUTTON */}
-            <h1 className="text-center font-semibold bg-cyan-400 rounded-2xl w-fit mx-auto p-2 outline-1">
-              Copy your anonymous messages link!
+            <h1
+              className="text-center font-semibold bg-cyan-400 rounded-2xl w-fit mx-auto p-2 outline-1 cursor-pointer"
+              onClick={() => {
+                if (user?.id) {
+                  navigator.clipboard.writeText(`https://anondms.vercel.app/message/${user.id}`);
+                  toast.success("Link copied successfully")
+                }
+              }}
+            >
+              Your anonymous messages link!
             </h1>
 
 
             {/* REPLACE WITH ACCEPT MESSAGES TOGGLE BUTTON */}
             <div className="flex flex-col md:block justify-self-end justify-end items-end">
+              
               <Button variant="outline" className="justify-self-end bg-cyan-400 rounded-2xl ml-auto hover:bg-blue-400 mr-2 sm:text-nowrap text-wrap">
                 Accept DMs
               </Button>

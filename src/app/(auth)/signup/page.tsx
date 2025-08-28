@@ -81,7 +81,7 @@ function page() {
 
   return (
     <>
-    <div className='relative min-h-screen w-screen overflow-hidden text-white flex items-center justify-center'>
+    <div className='relative min-h-screen w-screen overflow-hidden text-white flex items-center justify-center bg-cyan-800/60'>
       {/* decorative blurred blobs */}
       <div className='absolute -left-24 -top-24 w-44 h-44 sm:w-56 sm:h-56 md:w-72 md:h-72 rounded-full bg-pink-500 opacity-30 blur-3xl animate-blob mix-blend-plus-lighter'></div>
       <div className='absolute -right-24 -bottom-24 w-52 h-52 sm:w-72 sm:h-72 md:w-96 md:h-96 rounded-full bg-cyan-400 opacity-25 blur-3xl animate-blob animation-delay-2000 mix-blend-plus-lighter'></div>

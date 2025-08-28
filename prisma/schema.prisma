@@ -25,7 +25,7 @@ isAcceptingMessages Boolean @default(true)
 createdAt DateTime @default(now())
 updatedAt DateTime @updatedAt
 
-// Relations
+// Relation
 messages Message[] 
 }
 
@@ -37,5 +37,5 @@ createdAt DateTime @default(now())
 
 // Relation fields
 userId String
-user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+user User @relation(fields: [userId], references: [id])
 }
