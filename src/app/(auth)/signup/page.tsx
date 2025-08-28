@@ -2,6 +2,8 @@
 
 import React, { Suspense } from 'react'
 import Image from 'next/image'
+import { motion } from 'motion/react'
+import { Single_Day } from 'next/font/google';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -15,6 +17,8 @@ import { ApiResponse } from '@/types/ApiResponse'
 import Navigation from '@/utils/Navigation'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
+
+const singleDay = Single_Day({ weight: '400' });
 
 function page() {
   const [ username, setUsername ] = React.useState("");
@@ -81,18 +85,23 @@ function page() {
 
   return (
     <>
-    <div className='relative min-h-screen w-screen overflow-hidden text-white flex items-center justify-center bg-cyan-800/60'>
-      {/* decorative blurred blobs */}
-      <div className='absolute -left-24 -top-24 w-44 h-44 sm:w-56 sm:h-56 md:w-72 md:h-72 rounded-full bg-pink-500 opacity-30 blur-3xl animate-blob mix-blend-plus-lighter'></div>
-      <div className='absolute -right-24 -bottom-24 w-52 h-52 sm:w-72 sm:h-72 md:w-96 md:h-96 rounded-full bg-cyan-400 opacity-25 blur-3xl animate-blob animation-delay-2000 mix-blend-plus-lighter'></div>
+    <div className='flex justify-center items-center min-h-screen bg-cyan-800/60'>
+      <div className='w-full max-w-md md:p-8 p-4 space-y-8 bg-transparent rounded-lg'>
+        <div className='text-center'>
+            <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1 }}
+            className="inline-block rounded-full shadow-lg px-8 py-4 mb-6 border-2 border-black">
+            <h1 className={`text-6xl font-extrabold tracking-tight lg:text-8xl text-gray-800 ${singleDay.className}`}>
+              Anon DMs
+            </h1>
+            </motion.div>
+          <p className='mb-4'>Create an account to receive anonymous messages</p>
+        </div>
 
-      <div className='z-10 flex w-full items-center justify-center p-6'>
-        <div className='flex flex-col md:flex-row w-full max-w-4xl items-stretch justify-center gap-6'>
-          {/* signup card (left) */}
-          <div className='w-full max-w-md bg-white/8 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl p-6 transition-transform transform hover:-translate-y-1 z-10'>
-              <h2 className='text-3xl font-bold text-center text-black mb-6 tracking-wide drop-shadow-lg'>SIGN UP!</h2>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col items-stretch justify-center gap-4'>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4 flex flex-col w-full'>
           {/* //Username */}
           <FormField
             control={form.control}
@@ -107,14 +116,13 @@ function page() {
                   field.onChange(e);
                   debounced(e.target.value);
                 }}
-                className='w-full bg-white/5 placeholder:text-white/60 text-white py-2 px-3 rounded-md border border-white/8 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-shadow' />
+                className="w-full px-3 py-2 border-2 border-black rounded focus:outline-none focus:ring-2 focus:ring-cyan-500" />
 
                 </FormControl>
                 <FormDescription>
-                  This is your unique username
                 </FormDescription>
                 { loading }
-                <p className={`text-sm ${usernameMessage === "Username is available" ? "text-green-500" : "text-red-500"} mt-1`}>
+                <p className={`text-sm  p-2 font-bold ${usernameMessage === "Username is available" ? "text-shadow-cyan-950" : "text-red-500"}`}>
                   {usernameMessage}
                 </p>
                 <FormMessage/>                
@@ -131,12 +139,11 @@ function page() {
                 <FormControl>
                 <input {...field}
                 placeholder="anon11@dms.com"
-                className='w-full bg-white/5 placeholder:text-white/60 text-white py-2 px-3 rounded-md border border-white/8 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-shadow' 
+                className="w-full px-3 py-2 border-2 border-black rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 />
 
                 </FormControl>
                 <FormDescription>
-                  This is your unique email
                 </FormDescription>
                 <FormMessage/>                
               </FormItem>
@@ -148,17 +155,16 @@ function page() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className="mt-6">Password</FormLabel>
                 <FormControl>
                 <input {...field}
                 type="password"
                 placeholder="Password"
-                className='w-full bg-white/5 placeholder:text-white/60 text-white py-2 px-3 rounded-md border border-white/8 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition-shadow' 
+                className="w-full px-3 py-2 border-2 border-black rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 />
 
                 </FormControl>
                 <FormDescription>
-                  Enter your password
                 </FormDescription>
                 <FormMessage/>                
               </FormItem>
@@ -167,7 +173,7 @@ function page() {
           <Button 
           type="submit" 
           disabled={isSubmitting}
-          className='w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:scale-105 active:scale-100 transform transition-all shadow-lg text-white'>
+          className="w-full flex justify-center items-center hover:scale-110 transform duration-300 hover:text-green-400 hover:font-bold mt-4">
             {
               isSubmitting? (
                 <>
@@ -181,33 +187,17 @@ function page() {
             }
           </Button>
         </form>
-          </Form>
-            </div>
-            <Image
-              src="/loading.gif"
-              alt="Loading..."
-              width={550}
-              height={150}
-              className='absolute z-0 right-16'
-            />
+      </Form>
 
-          {/* divider with slash
-          <div className='hidden md:flex items-center justify-center px-2 mx-auto'>
-            <div className='flex flex-col items-center'>
-              <div className='h-24 flex items-center'>
-                <span className='text-4xl text-black/60 select-none'>/</span>
-              </div>
-            </div>
-          </div> */}
-
-          {/* sign-in card (right) */}
-            <div className='flex flex-col items-center justify-center w-full md:w-56 mx-auto mt-4 md:mt-0 order-2 md:order-none z-10'>
-            <p className='text-sm text-black'>Already have an account?</p>
-            <Navigation href="/signin" label="Sign in" className='text-amber-700'>
-            </Navigation>
-            </div>
-
+      <div className="text-center mt-6">
+        <p className={`text-gray-600 text-lg ${singleDay.className}`}>
+          Already have an account?{' '}
+        </p>
+        <div className="flex justify-center place-items-center mt-3">
+          <Navigation href="/signin" label="Sign in" className="w-fit text-2xl text-blue-600 hover:text-amber-400 hover:scale-110 hover:bg-cyan-700 duration-300 rounded-4xl p-2" />
         </div>
+      </div>
+
       </div>
     </div>
       </>

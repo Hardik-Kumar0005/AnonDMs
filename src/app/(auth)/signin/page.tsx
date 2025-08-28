@@ -16,6 +16,7 @@ import { motion, Variants } from 'motion/react';
 import Image from 'next/image';
 
 import { Single_Day } from 'next/font/google';
+import Navigation from '@/utils/Navigation';
 const singleDay = Single_Day({ weight: "400" });
 
 function page() {
@@ -55,8 +56,9 @@ function page() {
   return (
       <div
       className="flex justify-center items-center min-h-screen bg-cyan-800/60">
-      <div 
-      className="w-full max-w-md md:p-8 p-4 space-y-8 bg-transparent rounded-lg">
+      <div
+        className="w-full max-w-md md:p-8 p-4 space-y-8 bg-transparent rounded-lg"
+      >
         <div className="text-center">
             <motion.div
             initial={{ scale: 0 }}
@@ -118,15 +120,15 @@ function page() {
               )}
             />
             <Button
-              className="w-full flex justify-center items-center hover:scale-110 transform duration-300"
+              className="w-full flex justify-center items-center hover:scale-110 transform duration-300 hover:text-green-400 hover:font-bold"
               type="submit"
             >
               Sign In
-            </Button>
+            </  Button>
           </form>
         </Form>
         <div className="text-center mt-32">
-            <div className="-mt-28 flex justify-evenly">
+            <div className="mt-28 flex justify-evenly">
               <motion.img
               initial={{ clipPath: 'inset(0 0 100% 0)', opacity: 0 }}
               animate={{ clipPath: 'inset(0 0% 0% 0)', opacity: 1 }}
@@ -147,9 +149,9 @@ function page() {
           <p className={`text-gray-600 text-2xl font-${400} ${singleDay.className}`}>
             Don't have an account?{' '}
             <br />
-            <Link href="/signup" className="text-3xl text-blue-600 hover:text-amber-800">
-              Sign up
-            </Link>
+            <button>
+              <Navigation href="/signup" label="Sign up" className="text-3xl text-blue-600 hover:text-amber-400 hover:scale-110 hover:bg-cyan-700 duration-300 rounded-4xl p-2" />
+            </button>
           </p>
         </div>
       </div>
