@@ -128,11 +128,11 @@ function page() {
           </form>
         </Form>
         <div className="text-center mt-32">
-            <div className="mt-28 flex justify-evenly">
+            <div className="-mt-28 flex justify-evenly">
               <motion.img
               initial={{ clipPath: 'inset(0 0 100% 0)', opacity: 0 }}
               animate={{ clipPath: 'inset(0 0% 0% 0)', opacity: 1 }}
-              transition={{ duration: 4, ease: 'easeOut' }}
+              transition={{ duration: 3, ease: 'easeOut' }}
               draggable={false}
               style={{
                 pointerEvents: 'none',
