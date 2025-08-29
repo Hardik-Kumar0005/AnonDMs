@@ -41,9 +41,7 @@ function page() {
         toast.success("Messages refreshed");
       }
 
-      if( setMessages.length === 0 ){
-        // Handle empty messages case
-      }
+     
     }
     catch(error){
       const axiosError = error as AxiosError<ApiResponse>;
@@ -66,7 +64,15 @@ React.useEffect(() => {
 
 
   return (
-    <>
+    <div className=' bg-amber-400 border-8 border-black'>
+
+      <Image
+        src="/dashDoddle.png"
+        alt="Background"
+        layout="fill"
+        objectFit="cover"
+        className="z-0"
+      />
 
       <Navbar />
       <div className='fixed left-1/2 transform -translate-x-1/2'>
@@ -83,15 +89,37 @@ React.useEffect(() => {
         <br />
 
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-12 sm:w-fit max-w-2xl max-h-1/2 sm:max-w-screen items-center justify-center overflow-visible'>
-          {messages.map(message => (
+        {loading ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+            <Image
+              src="/loading.gif"
+              alt="Loading..."
+              width={200}
+              height={200}
+              draggable="false"
+              className="select-none"
+            />
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+            <Image
+              src="/noMess.png"
+              alt="No messages found"
+              width={200}
+              height={200}
+              draggable="false"
+              className="select-none"
+            />
+          </div>
+        ) : (
+          messages.map((message) => (
             <MessageCard key={message.id} message={message} />
-          ))}
+          ))
+        )}
         </div>
       </div>
-        
-
       
-    </>
+    </div>
   )
 }
 

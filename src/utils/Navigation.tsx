@@ -17,7 +17,7 @@ const Navigation: React.FC<Props> = ({
     children,
 }: Props) => {
     return (
-        <nav className={className}>
+        <nav className={[className, "cursor-pointer ", ""].filter(Boolean).join(" ")}>
             {children}
             <TransitionLink href={href} label={label} />
         </nav>

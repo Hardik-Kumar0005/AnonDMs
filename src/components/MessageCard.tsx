@@ -40,7 +40,7 @@ function MessageCard( {message, deleteMessage}: Props) {
 
 
   return (
-    <div className='relative bg-cyan-200 rounded-2xl border shadow-md md:hover:scale-105 hover:scale-105 hover:z-101 hover:border-4 hover:border-amber-400 transition-transform duration-200 ease-in-out min-h-[120px] max-w-xl w-full flex flex-col justify-between max-h-fit overflow-y-auto'>
+    <div className='relative bg-cyan-200 rounded-2xl border shadow-md md:hover:scale-105 hover:scale-105 hover:z-101 hover:border-4 hover:border-red-400 active:border-amber-400 transition-transform duration-200 ease-in-out min-h-[120px] max-w-xl w-full flex flex-col justify-between max-h-fit overflow-y-auto'>
       <div className='grid grid-cols-1 place-items-center justify-center text-center mt-8 mx-4 break-words'>
         <h2 className="relative text-lg font-semibold self-center text-center whitespace-pre-line items-center">{message.content}
           <br />
@@ -54,7 +54,7 @@ function MessageCard( {message, deleteMessage}: Props) {
 
     <BadgeX
         fill="yellow"
-        className="absolute top-2 right-2 scale-110 hover:scale-120 hover:bg-red-700 hover:rounded-t-2xl hover:border hover:rounded-br-2xl" />
+        className="absolute top-2 right-2 scale-110 hover:scale-120 hover:bg-red-700 active:bg-red-700 hover:rounded-t-2xl hover:border hover:rounded-br-2xl" />
 
   </AlertDialogTrigger>
   <AlertDialogContent>
