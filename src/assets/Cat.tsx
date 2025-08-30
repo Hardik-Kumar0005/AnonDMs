@@ -7,7 +7,8 @@ function Cat() {
 
   const gltf = useLoader(GLTFLoader, "/cat/scene.gltf");
   return (
-    <primitive object={gltf.scene} scale={6.0} position={[-1, -29, -5]} />
+      <primitive object={gltf.scene} scale={6.0} position={[-1, -29, -5]} />
+
   );
 };
 

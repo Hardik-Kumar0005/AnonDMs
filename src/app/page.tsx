@@ -7,6 +7,10 @@ import { Suspense } from "react";
 import Cat from "@/assets/Cat";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import CatSkeleton from "@/assets/CatSkeleton";
+import Dog from "@/assets/Dog";
+import Penguin from "@/assets/Penguin";
+import Slime from "@/assets/Slime";
 
 export default function Home() {
   return (
@@ -26,6 +30,41 @@ export default function Home() {
         </Suspense>
       </Canvas>
           </div>
+
+           <div className="bg-amber-400 w-50 h-50 mx-auto">
+          <Canvas>
+        <Suspense fallback={null}>
+          <Dog />
+          <OrbitControls />
+          <Environment preset="warehouse" />
+        </Suspense>
+      </Canvas>
+          </div>
+
+
+           <div className="bg-amber-400 w-50 h-50 mx-auto">
+          <Canvas>
+        <Suspense fallback={null}>
+          <Penguin />
+          <OrbitControls />
+          <Environment preset="warehouse" />
+        </Suspense>
+      </Canvas>
+          </div>
+
+
+
+           <div className="bg-amber-400 w-50 h-50 mx-auto">
+          <Canvas>
+        <Suspense fallback={null}>
+          <Slime />
+          <OrbitControls />
+          <Environment preset="warehouse" />
+        </Suspense>
+      </Canvas>
+          </div>
+
+
 
          </div>
          <div className="bg-amber-400 w-screen h-svh content-center">
