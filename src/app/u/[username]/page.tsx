@@ -11,6 +11,7 @@ import axios from 'axios'
 import { toast } from 'sonner'
 import { messageSchema } from '@/schemas/messageSchema'
 import { usePathname, useParams } from 'next/navigation'
+import DashNavbar from '@/app/dashboard/DashNavbar'
 
 type FormValues = z.infer<typeof messageSchema>
 
@@ -60,13 +61,7 @@ export default function Page() {
 
   return (
     <div className='bg-amber-400 border-8 border-black min-h-screen'>
-      {isLoggedIn ? (
-        <div className='w-full bg-white/80 border-b border-black p-4'>
-          <div className='max-w-6xl mx-auto'>
-            <span className='font-bold'>Logged in</span>
-          </div>
-        </div>
-      ) : (
+      {isLoggedIn ? ( <DashNavbar /> ) : (
         <Navbar />
       )}
 
