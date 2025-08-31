@@ -40,9 +40,10 @@ export default function HeroAnimation() {
 
 
     React.useEffect(() => {
+      const hero = document.getElementById("hero-section");
       const header = document.getElementById("hero-header");
       const images = document.getElementById("images");
-      if (!header || !images) return;
+      if (!hero || !header || !images) return;
 
       const imagesArray = Array.from(images.children) as HTMLElement[];
       const textSegments = document.querySelectorAll<HTMLElement>(".dynamic-text");
@@ -102,23 +103,26 @@ export default function HeroAnimation() {
             // Create duplicates at the moment we enter stage 2
             if (!window.duplicateIcons) {
               window.duplicateIcons = [];
+              const heroRect = hero.getBoundingClientRect();
               imagesArray.forEach(image => {
                 const rect = image.getBoundingClientRect();
                 const duplicate = image.cloneNode(true) as HTMLElement;
                 duplicate.className = "duplicate";
+                const relLeft = rect.left - heroRect.left;
+                const relTop = rect.top - heroRect.top;
                 Object.assign(duplicate.style, {
-                  position: 'fixed',
-                  left: `${rect.left}px`,
-                  top: `${rect.top}px`,
+                  position: 'absolute',
+                  left: `${relLeft}px`,
+                  top: `${relTop}px`,
                   width: `${rect.width}px`,
                   height: `${rect.height}px`,
                   zIndex: '100',
                   willChange: 'transform,left,top'
                 });
-                duplicate.dataset.startLeft = `${rect.left}`;
-                duplicate.dataset.startTop = `${rect.top}`;
+                duplicate.dataset.startLeft = `${relLeft}`;
+                duplicate.dataset.startTop = `${relTop}`;
                 duplicate.dataset.startWidth = `${rect.width}`;
-                document.body.appendChild(duplicate);
+                hero.appendChild(duplicate);
                 window.duplicateIcons!.push(duplicate);
               });
             }
@@ -128,17 +132,18 @@ export default function HeroAnimation() {
 
             // Move duplicates towards their placeholder targets
             if (window.duplicateIcons) {
+              const heroRect = hero.getBoundingClientRect();
               window.duplicateIcons.forEach((dup, i) => {
                 if (i < placeholderIcons.length) {
                   const startLeft = parseFloat(dup.dataset.startLeft!);
                   const startTop = parseFloat(dup.dataset.startTop!);
                   const startWidth = parseFloat(dup.dataset.startWidth!);
                   const endRect = placeholderIcons[i].getBoundingClientRect();
-                  const endX = endRect.left + (endRect.width - headerIconSize) / 2;
-                  const endY = endRect.top + (endRect.height - headerIconSize) / 2;
+                  const endXRel = (endRect.left - heroRect.left) + (endRect.width - headerIconSize) / 2;
+                  const endYRel = (endRect.top - heroRect.top) + (endRect.height - headerIconSize) / 2;
 
-                  const currentX = gsap.utils.interpolate(startLeft, endX, t);
-                  const currentY = gsap.utils.interpolate(startTop, endY, t);
+                  const currentX = gsap.utils.interpolate(startLeft, endXRel, t);
+                  const currentY = gsap.utils.interpolate(startTop, endYRel, t);
                   const currentScale = gsap.utils.interpolate(startWidth, headerIconSize, t) / startWidth;
                   gsap.set(dup, { left: `${currentX}px`, top: `${currentY}px`, transform: `scale(${currentScale})` });
                 }
@@ -150,12 +155,13 @@ export default function HeroAnimation() {
             gsap.set(header, { opacity: 0 });
             if (!window.duplicateIcons) return; // safety
             // lock duplicates to final spot
+            const heroRect = hero.getBoundingClientRect();
             window.duplicateIcons.forEach((dup, i) => {
               if (i < placeholderIcons.length) {
                 const endRect = placeholderIcons[i].getBoundingClientRect();
-                const endX = endRect.left + (endRect.width - headerIconSize) / 2;
-                const endY = endRect.top + (endRect.height - headerIconSize) / 2;
-                gsap.set(dup, { left: `${endX}px`, top: `${endY}px`, transform: `scale(${headerIconSize / parseFloat(dup.dataset.startWidth!)} )` });
+                const endXRel = (endRect.left - heroRect.left) + (endRect.width - headerIconSize) / 2;
+                const endYRel = (endRect.top - heroRect.top) + (endRect.height - headerIconSize) / 2;
+                gsap.set(dup, { left: `${endXRel}px`, top: `${endYRel}px`, transform: `scale(${headerIconSize / parseFloat(dup.dataset.startWidth!)} )` });
               }
             });
 
@@ -189,14 +195,14 @@ export default function HeroAnimation() {
 
   return (
     <>
-    <section id="hero-section" className='flex flex-col w-screen h-svh items-center justify-center transition-colors duration-300'>
-      <div id="hero-header" className="absolute top-1/5 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col text-center gap-4 will-change-transform flex-nowrap text-nowrap">
+    <section id="hero-section" className='relative flex flex-col w-screen h-lvh overflow-hidden items-center justify-center transition-colors duration-300'>
+      <div id="hero-header" className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col text-center gap-4 will-change-transform flex-nowrap text-nowrap">
                 <h1 className="text-6xl sm:text-9xl font-bold">ANON DMs</h1>
                 <p className="text-lg">Share your thoughts anonymously</p>
         </div>
 
         {/* IMAGES */}
-        <div id="images" className='fixed bottom-0 left-0 flex flex-row w-screen flex-nowrap items-end justify-center gap-2 pb-4' style={{ overflow: 'hidden' }}>
+  <div id="images" className='absolute bottom-1/12 left-1/2 -translate-x-1/2 flex flex-row w-screen flex-nowrap items-end justify-center gap-2 pb-2' style={{ overflow: 'hidden' }}>
 
       <div className="relative flex-shrink-0 w-[min(200px,20vw)] h-[min(200px,20vw)]">
               <Image
@@ -266,9 +272,9 @@ export default function HeroAnimation() {
         </h1>
 
     </section>
-    <section id="outro" className='h-svh'>
-      <h2 className="text-4xl font-bold text-center">Join the Conversation</h2>
-      <p className="text-lg text-center">Share your thoughts anonymously and connect with others.</p>
+    <section id="outro" className='h-svh min-h-screen flex flex-col items-center justify-center px-6 text-center gap-4'>
+      <h2 className="text-4xl sm:text-5xl font-bold">Join the Conversation</h2>
+      <p className="text-lg max-w-2xl">Share your thoughts anonymously and connect with others.</p>
     </section>
     </>
   )
