@@ -40,149 +40,152 @@ export default function HeroAnimation() {
 
 
     React.useEffect(() => {
-    const hero = document.getElementById("hero-section");
-    const header = document.getElementById("hero-header");
-    const dynamicText = document.getElementById("dynamic-text");
-    const placeholderIcon = document.getElementById("placeholder-icon");
-    const images = document.getElementById("images");
-    const imagesArray = images ? Array.from(images.children) : [];
+      const header = document.getElementById("hero-header");
+      const images = document.getElementById("images");
+      if (!header || !images) return;
 
+      const imagesArray = Array.from(images.children) as HTMLElement[];
+      const textSegments = document.querySelectorAll<HTMLElement>(".dynamic-text");
+      const placeholderIcons = document.querySelectorAll<HTMLElement>(".placeholder-icon");
 
-const textSegments = document.querySelectorAll<HTMLElement>("#dynamic-text");
-const textAnimationOrder: { segment: HTMLElement; originalIndex: number }[] = [];
-const tweens: gsap.core.Tween[] = [];
+      // Prepare text fade-in random order
+      const textAnimationOrder: { segment: HTMLElement; originalIndex: number }[] = [];
+      textSegments.forEach((segment, index) => {
+        textAnimationOrder.push({ segment, originalIndex: index });
+        gsap.set(segment, { opacity: 0 });
+      });
+      for (let i = textAnimationOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [textAnimationOrder[i], textAnimationOrder[j]] = [textAnimationOrder[j], textAnimationOrder[i]];
+      }
 
-// push all text segments with their index
-textSegments.forEach((segment, index) => textAnimationOrder.push({ segment, originalIndex: index }));
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      const headerIconSize = isMobile ? 30 : 60;
 
-// shuffle order randomly
-for (let i = textAnimationOrder.length - 1; i > 0; i--) {
-  const j = Math.floor(Math.random() * (i + 1));
-  [textAnimationOrder[i], textAnimationOrder[j]] = [textAnimationOrder[j], textAnimationOrder[i]];
-}
+      const STAGE_1_END = 0.4; // header fade + images rise
+      const STAGE_2_END = 0.7; // duplicates travel to placeholders
+      // stage 3 (text fade) starts after 0.7
 
-const isMobile = window.matchMedia("(max-width: 768px)").matches;
-const headerIconSize = isMobile ? 30 : 60;
-const currentIconSize = imagesArray[0]?.getBoundingClientRect().width || 0;
-const exactScale = headerIconSize / currentIconSize
-ScrollTrigger.create({
-    trigger: ".hero-section",
-    start: "top top",
-    end: `+=${window.innerHeight * 8}px`,
-    scrub: 1,
-    pin: true,
-    pinSpacing: true,
+      const trigger = ScrollTrigger.create({
+        // Use the actual section id instead of a missing class to ensure correct pinning
+        trigger: "#hero-section",
+        start: "top top",
+        end: `+=${window.innerHeight * 6}px`,
+        scrub: 1,
+        pin: true,
+        pinSpacing: true,
+        invalidateOnRefresh: true,
+        // markers: true, // uncomment for debugging start/end positions
+        onUpdate: (self) => {
+          const p = self.progress;
 
-    onUpdate: (self) => {
-        const progress = self.progress;
-        // Update the scale of the header icon based on scroll progress
-        textSegments.forEach((segment) => {
-            gsap.set(segment, { opacity: 0 });
-        });
+          // Stage 1: header fade/move + images rise
+          if (p <= STAGE_1_END) {
+            const t = p / STAGE_1_END; // 0 ->1
+            const headerMoveY = -100 * t;
+            gsap.set(header, { transform: `translate(-50%, calc(-50% + ${headerMoveY}px))`, opacity: 1 - t });
 
-        let containerMoveY = 0;
-        let moveProgress = 0;
-
-        if (progress <= 0.3) {
-            moveProgress = progress / 0.3;
-            containerMoveY = -window.innerHeight * moveProgress * 0.3; // move up to half viewport height
-
-            if (progress <= 0.15) {
-                const headerProgress = progress / 0.15;
-                const headerMoveY = -50 * headerProgress;
-                const headerOpacity = 1 - headerProgress;
-
-                gsap.set(header, {
-                    transform: `translate(-50%, calc(-50% + ${headerMoveY}px))`, opacity: headerOpacity
-                });
-            }
-            else {
-                gsap.set(header, { transform: `translate(-50%, calc(-50% + -50px))`, opacity: 0 });
-            }
+            // Remove duplicates if coming back up
             if (window.duplicateIcons) {
-                window.duplicateIcons.forEach((duplicate) => {
-                    if (duplicate.parentNode) {
-                        duplicate.parentNode.removeChild(duplicate);
-                    }
+              window.duplicateIcons.forEach(d => d.remove());
+              window.duplicateIcons = null;
+            }
+            // Move original images upward (from bottom to approx mid viewport)
+            const riseDistance = window.innerHeight * 0.45; // tune height
+            gsap.set(images, { y: -riseDistance * t, opacity: 1 });
+          }
+          // Stage 2: create duplicates once & move them to placeholder icons while fading originals
+          else if (p <= STAGE_2_END) {
+            const t = (p - STAGE_1_END) / (STAGE_2_END - STAGE_1_END); // 0 ->1
+            gsap.set(header, { opacity: 0 });
+
+            // Create duplicates at the moment we enter stage 2
+            if (!window.duplicateIcons) {
+              window.duplicateIcons = [];
+              imagesArray.forEach(image => {
+                const rect = image.getBoundingClientRect();
+                const duplicate = image.cloneNode(true) as HTMLElement;
+                duplicate.className = "duplicate";
+                Object.assign(duplicate.style, {
+                  position: 'fixed',
+                  left: `${rect.left}px`,
+                  top: `${rect.top}px`,
+                  width: `${rect.width}px`,
+                  height: `${rect.height}px`,
+                  zIndex: '100',
+                  willChange: 'transform,left,top'
                 });
-    
-                window.duplicateIcons = null;
-            }
-    
-            gsap.set(imagesArray, {
-                x: 0,
-                y: containerMoveY,
-                scale: 1,
-                opacity: 1,
-            });
-    
-            imagesArray.forEach((image, index) => {
-                const staggerDelay = index * 0.1;
-                const imageStart = staggerDelay;
-                const imageEnd = staggerDelay + 0.5;
-    
-                const imageProgress = gsap.utils.mapRange(imageStart, imageEnd, 0, 1, moveProgress);
-    
-                const clampedProgress = Math.max(0, Math.min(1, imageProgress));
-    
-                const startOffset = -containerMoveY;
-                const individualY = startOffset * (1 - clampedProgress);
-    
-                gsap.set(image, { 
-                    x: 0,
-                    y: individualY,
-                  });
-            });
-        }
-
-        else if(progress <= 0.6){
-            const scaleProgress = (progress - 0.3) / 0.3;
-            gsap.set(header, {
-                transform: `translate(-50%, calc(-50% + -50px))`,
-                opacity: 0,
-            });
-
-            if (scaleProgress >= 0.5 && hero) {
-                hero.style.backgroundColor = "red";
-            }
-            else if (hero){
-                hero.style.backgroundColor = "green";
+                duplicate.dataset.startLeft = `${rect.left}`;
+                duplicate.dataset.startTop = `${rect.top}`;
+                duplicate.dataset.startWidth = `${rect.width}`;
+                document.body.appendChild(duplicate);
+                window.duplicateIcons!.push(duplicate);
+              });
             }
 
+            // Fade originals out once duplicates exist
+            gsap.set(images, { opacity: 0 });
+
+            // Move duplicates towards their placeholder targets
             if (window.duplicateIcons) {
-                window.duplicateIcons.forEach((duplicate) => {
-                    if (duplicate.parentNode) {
-                        duplicate.parentNode.removeChild(duplicate);
-                    }
-                });
+              window.duplicateIcons.forEach((dup, i) => {
+                if (i < placeholderIcons.length) {
+                  const startLeft = parseFloat(dup.dataset.startLeft!);
+                  const startTop = parseFloat(dup.dataset.startTop!);
+                  const startWidth = parseFloat(dup.dataset.startWidth!);
+                  const endRect = placeholderIcons[i].getBoundingClientRect();
+                  const endX = endRect.left + (endRect.width - headerIconSize) / 2;
+                  const endY = endRect.top + (endRect.height - headerIconSize) / 2;
 
-                window.duplicateIcons = null;
+                  const currentX = gsap.utils.interpolate(startLeft, endX, t);
+                  const currentY = gsap.utils.interpolate(startTop, endY, t);
+                  const currentScale = gsap.utils.interpolate(startWidth, headerIconSize, t) / startWidth;
+                  gsap.set(dup, { left: `${currentX}px`, top: `${currentY}px`, transform: `scale(${currentScale})` });
+                }
+              });
             }
+          }
+          // Stage 3+: text fade in after images placed
+          else {
+            gsap.set(header, { opacity: 0 });
+            if (!window.duplicateIcons) return; // safety
+            // lock duplicates to final spot
+            window.duplicateIcons.forEach((dup, i) => {
+              if (i < placeholderIcons.length) {
+                const endRect = placeholderIcons[i].getBoundingClientRect();
+                const endX = endRect.left + (endRect.width - headerIconSize) / 2;
+                const endY = endRect.top + (endRect.height - headerIconSize) / 2;
+                gsap.set(dup, { left: `${endX}px`, top: `${endY}px`, transform: `scale(${headerIconSize / parseFloat(dup.dataset.startWidth!)} )` });
+              }
+            });
 
-            const targetCenterY = window.innerHeight / 2;
-            const targetCenterX = window.innerWidth / 2;
-            const containerRect = images?.getBoundingClientRect();
-            if (containerRect) {
-                const currentCenterX = containerRect.left + containerRect.width / 2;
-                const currentCenterY = containerRect.top + containerRect.height / 2;
-            }
-            const deltaY = targetCenterY - (containerRect?.top || 0) - (containerRect?.height || 0) / 2;
-            const deltaX = targetCenterX - (containerRect?.left || 0) - (containerRect?.width || 0) / 2;
+            const t = (p - STAGE_2_END) / (1 - STAGE_2_END); // 0 ->1
+            // start fade after 20% into stage 3 for extra delay
+            const fadeStart = 0.2;
+            const fadeProgress = t < fadeStart ? 0 : (t - fadeStart) / (1 - fadeStart);
+            textAnimationOrder.forEach((item, i) => {
+              const slotStart = i / textAnimationOrder.length;
+              const slotEnd = (i + 1) / textAnimationOrder.length;
+              const segT = gsap.utils.mapRange(slotStart, slotEnd, 0, 1, fadeProgress);
+              gsap.set(item.segment, { opacity: Math.max(0, Math.min(1, segT)) });
+            });
 
+            // (Reverted) End fade-out of duplicate icons removed per user request.
+          }
         }
+      });
 
-    }
-});
+  // Force a refresh once layout settles to ensure measurements are correct
+  requestAnimationFrame(() => ScrollTrigger.refresh());
 
-// fade in each segment one by one
-textAnimationOrder.forEach((item, i) => {
-  const t = gsap.fromTo(item.segment, { opacity: 0 }, { opacity: 1, duration: 1, delay: i * 0.5 });
-  tweens.push(t);
-});
-
-
-
-  }, []);
+  return () => {
+        trigger.kill();
+        if (window.duplicateIcons) {
+          window.duplicateIcons.forEach(d => d.remove());
+          window.duplicateIcons = null;
+        }
+      };
+    }, []);
 
   return (
     <>
@@ -249,11 +252,23 @@ textAnimationOrder.forEach((item, i) => {
 
 
         {/* ANIMATED TEXT */}
-        <h1 id="animated-text" className='relative text-center text-cyan-700 leading-1'>
-            <div id="placeholder-icon" className='-mt-10 w-15 h-15 inline-block align-middle will-change-transform invisible'></div>
-            <span id="dynamic-text" className='text-4xl opacity-0'>I am Beauty. Beauty is me.</span>
+                <h1 id="animated-text" className='relative text-center text-cyan-700 leading-1'>
+            <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform invisible"></div>
+            <span className="dynamic-text text-4xl opacity-0">Whispers travel farther than names.</span>
+            <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform invisible"></div>
+            <span className="dynamic-text text-4xl opacity-0">Secrets feel lighter when shared.</span>
+            <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform invisible"></div>
+            <span className="dynamic-text text-4xl opacity-0">Silence breaks—identity stays hidden.</span>
+            <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform invisible"></div>
+            <span className="dynamic-text text-4xl opacity-0">Anonymous voices still carry truth.</span>
+            <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform invisible"></div>
+            <span className="dynamic-text text-4xl opacity-0">Your thoughts. No spotlight. Just expression.</span>
         </h1>
 
+    </section>
+    <section id="outro" className='h-svh'>
+      <h2 className="text-4xl font-bold text-center">Join the Conversation</h2>
+      <p className="text-lg text-center">Share your thoughts anonymously and connect with others.</p>
     </section>
     </>
   )
