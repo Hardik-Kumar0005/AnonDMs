@@ -3,7 +3,7 @@
 import React, { Suspense } from 'react'
 import Image from 'next/image'
 import { motion } from 'motion/react'
-import { Single_Day } from 'next/font/google';
+import { Tinos } from 'next/font/google';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -18,7 +18,7 @@ import Navigation from '@/utils/Navigation'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 
-const singleDay = Single_Day({ weight: '400' });
+const tinos = Tinos({ weight: ['400'], subsets: ['latin'] });
 
 function page() {
   const [ username, setUsername ] = React.useState("");
@@ -93,7 +93,7 @@ function page() {
             animate={{ scale: 1 }}
             transition={{ duration: 1 }}
             className="inline-block rounded-full shadow-lg px-8 py-4 mb-6 border-2 border-black">
-            <h1 className={`text-6xl font-extrabold tracking-tight lg:text-8xl text-gray-800 ${singleDay.className}`}>
+            <h1 className={`text-6xl font-extrabold tracking-tight lg:text-8xl text-gray-800 ${tinos.className}`}>
               Anon DMs
             </h1>
             </motion.div>
@@ -189,14 +189,33 @@ function page() {
         </form>
       </Form>
 
-      <div className="text-center mt-6">
-        <p className={`text-gray-600 text-lg ${singleDay.className}`}>
-          Already have an account?{' '}
-        </p>
-        <div className="flex justify-center place-items-center mt-3">
-          <Navigation href="/signin" label="Sign in" className="w-fit text-2xl text-blue-600 hover:text-amber-400 hover:scale-110 hover:bg-cyan-700 duration-300 rounded-4xl p-2" />
+      <div className="text-center mt-32">
+            <div className="-mt-28 flex justify-evenly">
+              <motion.img
+              initial={{ clipPath: 'inset(0 0 100% 0)', opacity: 0 }}
+              animate={{ clipPath: 'inset(0 0% 0% 0)', opacity: 1 }}
+              transition={{ duration: 3, ease: 'easeOut' }}
+              draggable={false}
+              style={{
+                pointerEvents: 'none',
+                userSelect: 'none',
+                MozUserSelect: 'none',
+                WebkitUserSelect: 'none',
+              }}
+              src="/doodleArrow.png"
+              alt="Description"
+              width={50}
+              height={50}
+              />
+            </div>
+          <p className={`text-gray-600 text-2xl font-${400} ${tinos.className}`}>
+            Already have an account?{' '}
+            <br />
+            <button>
+              <Navigation href="/signin" label="Sign in" className="text-3xl text-blue-600 hover:text-amber-400 hover:scale-110 hover:bg-cyan-700 duration-300 rounded-4xl p-2" />
+            </button>
+          </p>
         </div>
-      </div>
 
       </div>
     </div>

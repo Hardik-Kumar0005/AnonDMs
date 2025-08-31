@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useCallback } from 'react'
-import Navbar from './Navbar'
+import Navbar from './DashNavbar'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
@@ -64,59 +64,59 @@ React.useEffect(() => {
 
 
   return (
-    <div className=' bg-amber-400 border-8 border-black'>
+    <div className=' bg-amber-400 border-8 border-cyan-700'>
+      
+     <Navbar />
 
       <Image
-        src="/dashDoddle.png"
-        alt="Background"
-        layout="fill"
-        objectFit="cover"
-        className="z-0"
+      src="/dashDoddle.png"
+      alt="Background"
+      layout="fill"
+      objectFit="cover"
+      className="z-0"
       />
-
-      <Navbar />
       <div className='fixed left-1/2 transform -translate-x-1/2'>
-        <Image draggable="false" style={{
-            pointerEvents: 'none',
-            userSelect: 'none',
-            MozUserSelect: 'none',
-            WebkitUserSelect: 'none',
-         }}
-          src="/dashArrow.png" alt="Description" width={300} height={300} />
+      <Image draggable="false" style={{
+        pointerEvents: 'none',
+        userSelect: 'none',
+        MozUserSelect: 'none',
+        WebkitUserSelect: 'none',
+       }}
+        src="/dashArrow.png" alt="Description" width={300} height={300} />
       </div>
       <div className='w-screen min-h-screen flex flex-col p-4 justify-center sm:justify-start sm:ml-auto sm:mr-auto sm:pt-48 mx-auto items-center z-100 sm:mt-12 mt-8 overflow-x-auto max-w-fit overflow-y-auto'>
 
-        <br />
+      <br />
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-12 sm:w-fit max-w-2xl max-h-1/2 sm:max-w-screen items-center justify-center overflow-visible'>
-        {loading ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-            <Image
-              src="/loading.gif"
-              alt="Loading..."
-              width={200}
-              height={200}
-              draggable="false"
-              className="select-none"
-            />
-          </div>
-        ) : messages.length === 0 ? (
-          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-            <Image
-              src="/noMess.png"
-              alt="No messages found"
-              width={200}
-              height={200}
-              draggable="false"
-              className="select-none"
-            />
-          </div>
-        ) : (
-          messages.map((message) => (
-            <MessageCard key={message.id} message={message} />
-          ))
-        )}
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-12 sm:w-fit max-w-2xl max-h-1/2 sm:max-w-screen items-center justify-center overflow-visible'>
+      {loading ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <Image
+          src="/loading.gif"
+          alt="Loading..."
+          width={200}
+          height={200}
+          draggable="false"
+          className="select-none"
+        />
         </div>
+      ) : messages.length === 0 ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <Image
+          src="/noMess.png"
+          alt="No messages found"
+          width={200}
+          height={200}
+          draggable="false"
+          className="select-none"
+        />
+        </div>
+      ) : (
+        messages.map((message) => (
+        <MessageCard key={message.id} message={message} />
+        ))
+      )}
+      </div>
       </div>
       
     </div>

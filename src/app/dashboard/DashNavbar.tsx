@@ -24,7 +24,7 @@ import { ApiResponse } from "@/types/ApiResponse";
 
 
 
-function Navbar() {
+function DashNavbar() {
     const { data: session } = useSession();
     const user:User = session?.user as User;
     const deleteAll = async () => {
@@ -74,12 +74,12 @@ function Navbar() {
               className="text-center font-semibold bg-cyan-400 rounded-2xl w-fit mx-auto p-2 outline-1 cursor-pointer hover:scale-120 active:scale-120"
               onClick={() => {
                 if (user?.id) {
-                  navigator.clipboard.writeText(`http://localhost:3000/u/${user.id}`);
+                  navigator.clipboard.writeText(`http://localhost:3000/u/${user.username}`);
                   toast.success("Link copied successfully")
                 }
               }}
             >
-              Your anonymous messages link!
+              Your Anon Messages link!
             </h1>
 
 
@@ -101,4 +101,4 @@ function Navbar() {
   )
 }
 
-export default Navbar
+export default DashNavbar

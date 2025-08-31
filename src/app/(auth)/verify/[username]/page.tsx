@@ -11,11 +11,11 @@ import axios, { AxiosError } from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Single_Day } from 'next/font/google';
+// Using system serif (Times New Roman) instead of Google-hosted Single Day
 import Link from 'next/link';
 import Navigation from '@/utils/Navigation';
 
-const singleDay = Single_Day({ weight: '400' });
+
 
 function page() {
     const router = useRouter();
@@ -49,7 +49,7 @@ function page() {
       <div className='w-full max-w-md md:p-8 p-4 space-y-8 bg-transparent rounded-lg'>
         <div className='text-center'>
           <div className="inline-block rounded-full shadow-lg px-8 py-4 mb-6 border-2 border-black">
-            <h1 className={`text-5xl font-extrabold tracking-tight lg:text-6xl text-gray-800 ${singleDay.className}`}>
+            <h1 className={`text-5xl font-extrabold tracking-tight lg:text-6xl text-gray-800 font-serif`} style={{ fontFamily: '"Times New Roman", Times, serif' }}>
               Verify Account
             </h1>
           </div>
@@ -80,7 +80,7 @@ function page() {
         </Form>
 
         <div className='text-center mt-6'>
-          <p className={`text-gray-600 text-lg ${singleDay.className}`}>
+          <p className={`text-gray-600 text-lg font-serif`} style={{ fontFamily: '"Times New Roman", Times, serif' }}>
             Need a new code?{' '}
           </p>
           <div className='flex justify-center place-items-center mt-3'>
