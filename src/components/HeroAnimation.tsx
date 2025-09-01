@@ -1,6 +1,5 @@
 "use client";
 
-
 import React from 'react'
 import Image from 'next/image'
 import gsap from 'gsap';
@@ -12,7 +11,6 @@ declare global {
   interface Window {
     duplicateIcons?: HTMLElement[] | null;
     containerMoveY: number;
-
   }
 }
 
@@ -22,19 +20,14 @@ export default function HeroAnimation() {
 
     // Initialize a new Lenis instance for smooth scrolling
     React.useEffect(() => {
-
         const lenis = new Lenis();
         
-        // Synchronize Lenis scrolling with GSAP's ScrollTrigger plugin
         lenis.on('scroll', ScrollTrigger.update);
         
-        // Add Lenis's requestAnimationFrame (raf) method to GSAP's ticker
-        // This ensures Lenis's smooth scroll animation updates on each GSAP tick
         gsap.ticker.add((time) => {
-          lenis.raf(time * 1000); // Convert time from seconds to milliseconds
+          lenis.raf(time * 1000);
         });
         
-        // Disable lag smoothing in GSAP to prevent any delay in scroll animations
         gsap.ticker.lagSmoothing(0);
     },[])
 
@@ -45,11 +38,231 @@ export default function HeroAnimation() {
       const images = document.getElementById("images");
       if (!hero || !header || !images) return;
 
-      const imagesArray = Array.from(images.children) as HTMLElement[];
-      const textSegments = document.querySelectorAll<HTMLElement>(".dynamic-text");
-      const placeholderIcons = document.querySelectorAll<HTMLElement>(".placeholder-icon");
+      // Measure navbar (assumes a <nav> element exists in layout)
+      const navEl = document.querySelector('nav');
+      const navHeight = navEl ? navEl.getBoundingClientRect().height : 0;
 
-      // Prepare text fade-in random order
+      // Mobile detection early
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+      // Always offset hero for navbar so animated elements don't pass underneath
+      hero.style.minHeight = `calc(100vh - ${navHeight}px)`;
+      hero.style.height = `calc(100vh - ${navHeight}px)`;
+      hero.style.paddingTop = `${navHeight}px`;
+
+      const imagesArray = Array.from(images.children) as HTMLElement[];
+
+      // Mobile: constrain initial row so all images fit inside viewport width
+      if (isMobile) {
+        const count = images.children.length;
+        const sidePadPx = 12; // left/right breathing room
+        const gapPx = 4; // tight gap
+        const available = window.innerWidth - sidePadPx * 2;
+        const widthEach = Math.floor((available - gapPx * (count - 1)) / count);
+        imagesArray.forEach(wrapper => {
+          wrapper.style.width = `${widthEach}px`;
+          wrapper.style.height = `${widthEach}px`;
+        });
+        Object.assign(images.style, {
+          paddingLeft: `${sidePadPx}px`,
+          paddingRight: `${sidePadPx}px`,
+          gap: `${gapPx}px`
+        });
+      }
+
+  const textSegments = document.querySelectorAll<HTMLElement>(".dynamic-text");
+  const placeholderIcons = document.querySelectorAll<HTMLElement>(".placeholder-icon"); // kept (unused now) for minimal DOM diff
+  const textContainer = textSegments[0]?.parentElement;
+      const headerIconSize = isMobile ? 45 : 90;
+      
+      if (textContainer) {
+        // Make container cover hero for absolute positioning of top/bottom groups.
+        gsap.set(textContainer, {
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: '100%',
+          height: '100%',
+          transform: 'none',
+          pointerEvents: 'none'
+        });
+      }
+
+      // We'll leave original text structure; later we'll absolutely position around center image.
+      const STAGE_1_END = 0.35; // header up + rise
+      const STAGE_2_END = 0.6;  // morph duplicates (prep)
+
+      // state for final layout
+      let layoutInitialized = false;
+      let textLayoutDone = false;
+      const imageFinalTargets: {left:number; top:number; scale:number;}[] = [];
+
+      function initFinalLayout(centerIndex = 2) {
+        if (layoutInitialized || !window.duplicateIcons) return;
+  if (!hero) return; // safety
+  const heroRect = hero.getBoundingClientRect();
+  const pad = 24;
+  const sidePad = isMobile ? 12 : pad; // tighter side padding on small screens
+        const dups = window.duplicateIcons;
+        if (!dups || dups.length < 5) return;
+        // map indices: 0 TL,1 TR,2 center,3 BL,4 BR
+        const extraTopMargin = isMobile ? 32 : 64; // pushes images further down
+        dups.forEach((dup, i) => {
+          let w = dup.getBoundingClientRect().width;
+          let h = dup.getBoundingClientRect().height;
+          const centerScaleDesktop = 1.3;
+          const centerScaleMobile = 1.05;
+          let left = 0, top = 0, scale = i === centerIndex ? (isMobile ? centerScaleMobile : centerScaleDesktop) : 1;
+          const topOffset = pad + navHeight + extraTopMargin; // lower the top row below nav + extra spacing
+          // Adjust scale so width never exceeds viewport width minus sidePad margins
+          if (isMobile) {
+            const maxAvail = heroRect.width - 2 * sidePad;
+            if (w * scale > maxAvail) {
+              scale = maxAvail / w;
+            }
+          }
+          if (i === centerIndex) {
+            // center but never above a safe band
+            left = (heroRect.width - w * scale) / 2;
+            const idealCenterTop = (heroRect.height - h * scale) / 2;
+            // ensure center isn't too high; clamp to at least (topOffset + 20)
+            top = Math.max(idealCenterTop, topOffset + 20);
+            // also prevent bottom overflow
+            const maxTop = heroRect.height - h * scale - pad;
+            top = Math.min(top, maxTop);
+          } else {
+            switch(i) {
+              case 0: left = sidePad; top = topOffset; break; // TL
+              case 1: left = heroRect.width - w * scale - sidePad; top = topOffset; break; // TR
+              case 3: left = sidePad; top = heroRect.height - h * scale - pad; break; // BL
+              case 4: left = heroRect.width - w * scale - sidePad; top = heroRect.height - h * scale - pad; break; // BR
+            }
+          }
+          // Clamp horizontally in case scale pushes outside
+          const maxLeft = heroRect.width - w * scale - sidePad;
+          left = Math.min(Math.max(left, sidePad), maxLeft);
+          // Prevent overlap with navbar (mobile) for non-bottom rows
+          if (top < topOffset) top = topOffset;
+          imageFinalTargets[i] = { left, top, scale };
+        });
+        layoutInitialized = true;
+      }
+
+  function applyTextLayout() {
+    if (textLayoutDone) return;
+    if (!hero || !textContainer) return;
+    const heroRect = hero.getBoundingClientRect();
+    const centerDup = window.duplicateIcons?.[2];
+    if (!centerDup) return; // wait until center image exists
+    const centerRect = centerDup.getBoundingClientRect();
+    const centerTopLocal = centerRect.top - heroRect.top;
+    const centerBottomLocal = centerRect.bottom - heroRect.top;
+
+    // Create top & bottom group wrappers
+    let topGroup = document.getElementById('dynamic-text-top');
+    let bottomGroup = document.getElementById('dynamic-text-bottom');
+    if (!topGroup) {
+      topGroup = document.createElement('div');
+      topGroup.id = 'dynamic-text-top';
+      textContainer.appendChild(topGroup);
+    }
+    if (!bottomGroup) {
+      bottomGroup = document.createElement('div');
+      bottomGroup.id = 'dynamic-text-bottom';
+      textContainer.appendChild(bottomGroup);
+    }
+    // Reset groups
+    topGroup.innerHTML = '';
+    bottomGroup.innerHTML = '';
+
+    const gap = (window.matchMedia('(max-width: 768px)').matches) ? 8 : 14;
+
+    // Assign first 2 to top, remaining to bottom
+    textSegments.forEach((seg, i) => {
+      seg.style.whiteSpace = 'nowrap';
+      seg.style.display = 'inline-block';
+      seg.style.marginRight = i === 1 || i === textSegments.length-1 ? '0' : `${gap}px`;
+      if (i < 2) topGroup!.appendChild(seg); else bottomGroup!.appendChild(seg);
+    });
+
+    // Style groups (inline items; wrap if overflow) and position
+    [topGroup, bottomGroup].forEach(g => {
+      if (!g) return;
+      Object.assign(g.style, {
+        position: 'absolute',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: `${gap}px`,
+        maxWidth: '90%',
+        pointerEvents: 'none',
+        textAlign: 'center'
+      });
+    });
+
+    // Positioning logic:
+    // Desktop: balanced centering in available space above/below center image.
+    // Mobile (narrow): hug closer to the image (minimal spacing) so text stays near focal point.
+    const minSpacingDesktop = 20;
+    const minSpacingMobile = 6; // much tighter for small screens
+
+    // Measure intrinsic heights first
+    topGroup!.style.top = '0px';
+    bottomGroup!.style.top = '0px';
+    const topH = topGroup!.getBoundingClientRect().height;
+    const bottomH = bottomGroup!.getBoundingClientRect().height;
+
+    let topY: number;
+    let bottomY: number;
+
+    if (isMobile) {
+      // Compact: place directly above and below with tight spacing
+      topY = Math.max(centerTopLocal - topH - minSpacingMobile, 0);
+      bottomY = Math.min(centerBottomLocal + minSpacingMobile, heroRect.height - bottomH);
+      // If overlapping due to extremely small space, fallback to slight overlap avoidance
+      if (bottomY - (topY + topH) < (centerBottomLocal - centerTopLocal)) {
+        // leave as is; primary goal is proximity
+      }
+    } else {
+      // Desktop balanced approach
+      const spaceAbove = centerTopLocal;
+      const spaceBelow = heroRect.height - centerBottomLocal;
+      topY = (spaceAbove - topH) / 2;
+      bottomY = centerBottomLocal + (spaceBelow - bottomH) / 2;
+      // enforce minimum spacing
+      if (centerTopLocal - (topY + topH) < minSpacingDesktop) {
+        topY = Math.max(centerTopLocal - topH - minSpacingDesktop, 0);
+      }
+      if (bottomY - centerBottomLocal < minSpacingDesktop) {
+        bottomY = Math.min(centerBottomLocal + minSpacingDesktop, heroRect.height - bottomH);
+      }
+      // Additional downward shift to bring first two (top group) closer to center image on desktop only
+      const desktopTopGroupShift = 60; // px; adjust as desired
+      const maxTopBeforeOverlap = centerTopLocal - topH - minSpacingDesktop; // largest allowed top position without violating spacing
+      // Only shift if there is room (topY less than allowed max position)
+      if (topY < maxTopBeforeOverlap) {
+        topY = Math.min(topY + desktopTopGroupShift, Math.max(0, maxTopBeforeOverlap));
+      }
+    }
+
+  // Nudge bottom group further down to avoid any visual clipping under the center image
+  const extraBottomOffset = isMobile ? 140 : 14; // further increased mobile shift per request
+  bottomY = Math.min(bottomY + extraBottomOffset, heroRect.height - bottomH);
+
+    // Final clamps
+    topY = Math.max(0, Math.min(topY, heroRect.height - topH));
+    bottomY = Math.max(0, Math.min(bottomY, heroRect.height - bottomH));
+
+    topGroup!.style.top = `${topY}px`;
+    bottomGroup!.style.top = `${bottomY}px`;
+
+    textLayoutDone = true;
+  }
+
+      // Build randomized text reveal order
       const textAnimationOrder: { segment: HTMLElement; originalIndex: number }[] = [];
       textSegments.forEach((segment, index) => {
         textAnimationOrder.push({ segment, originalIndex: index });
@@ -60,15 +273,7 @@ export default function HeroAnimation() {
         [textAnimationOrder[i], textAnimationOrder[j]] = [textAnimationOrder[j], textAnimationOrder[i]];
       }
 
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
-      const headerIconSize = isMobile ? 30 : 60;
-
-      const STAGE_1_END = 0.4; // header fade + images rise
-      const STAGE_2_END = 0.7; // duplicates travel to placeholders
-      // stage 3 (text fade) starts after 0.7
-
       const trigger = ScrollTrigger.create({
-        // Use the actual section id instead of a missing class to ensure correct pinning
         trigger: "#hero-section",
         start: "top top",
         end: `+=${window.innerHeight * 6}px`,
@@ -76,31 +281,29 @@ export default function HeroAnimation() {
         pin: true,
         pinSpacing: true,
         invalidateOnRefresh: true,
-        // markers: true, // uncomment for debugging start/end positions
+        // markers: true,
         onUpdate: (self) => {
           const p = self.progress;
 
-          // Stage 1: header fade/move + images rise
           if (p <= STAGE_1_END) {
-            const t = p / STAGE_1_END; // 0 ->1
+            const t = p / STAGE_1_END;
             const headerMoveY = -100 * t;
             gsap.set(header, { transform: `translate(-50%, calc(-50% + ${headerMoveY}px))`, opacity: 1 - t });
 
-            // Remove duplicates if coming back up
             if (window.duplicateIcons) {
               window.duplicateIcons.forEach(d => d.remove());
               window.duplicateIcons = null;
             }
-            // Move original images upward (from bottom to approx mid viewport)
-            const riseDistance = window.innerHeight * 0.45; // tune height
+            const riseDistance = window.innerHeight * 0.45;
             gsap.set(images, { y: -riseDistance * t, opacity: 1 });
+            
+            textSegments.forEach(segment => gsap.set(segment, { opacity: 0 }));
+
           }
-          // Stage 2: create duplicates once & move them to placeholder icons while fading originals
           else if (p <= STAGE_2_END) {
-            const t = (p - STAGE_1_END) / (STAGE_2_END - STAGE_1_END); // 0 ->1
+            const t = (p - STAGE_1_END) / (STAGE_2_END - STAGE_1_END);
             gsap.set(header, { opacity: 0 });
 
-            // Create duplicates at the moment we enter stage 2
             if (!window.duplicateIcons) {
               window.duplicateIcons = [];
               const heroRect = hero.getBoundingClientRect();
@@ -125,73 +328,70 @@ export default function HeroAnimation() {
                 hero.appendChild(duplicate);
                 window.duplicateIcons!.push(duplicate);
               });
+              initFinalLayout();
             }
 
-            // Fade originals out once duplicates exist
             gsap.set(images, { opacity: 0 });
 
-            // Move duplicates towards their placeholder targets
             if (window.duplicateIcons) {
-              const heroRect = hero.getBoundingClientRect();
-              window.duplicateIcons.forEach((dup, i) => {
-                if (i < placeholderIcons.length) {
-                  const startLeft = parseFloat(dup.dataset.startLeft!);
-                  const startTop = parseFloat(dup.dataset.startTop!);
-                  const startWidth = parseFloat(dup.dataset.startWidth!);
-                  const endRect = placeholderIcons[i].getBoundingClientRect();
-                  const endXRel = (endRect.left - heroRect.left) + (endRect.width - headerIconSize) / 2;
-                  const endYRel = (endRect.top - heroRect.top) + (endRect.height - headerIconSize) / 2;
-
-                  const currentX = gsap.utils.interpolate(startLeft, endXRel, t);
-                  const currentY = gsap.utils.interpolate(startTop, endYRel, t);
-                  const currentScale = gsap.utils.interpolate(startWidth, headerIconSize, t) / startWidth;
-                  gsap.set(dup, { left: `${currentX}px`, top: `${currentY}px`, transform: `scale(${currentScale})` });
-                }
+              // gently scale up all while preparing
+              window.duplicateIcons.forEach((dup) => {
+                const startWidth = parseFloat(dup.dataset.startWidth!);
+                const currentScale = gsap.utils.interpolate(1, 1.05, t);
+                gsap.set(dup, { transform: `scale(${currentScale})` });
               });
             }
           }
-          // Stage 3+: text fade in after images placed
           else {
             gsap.set(header, { opacity: 0 });
-            if (!window.duplicateIcons) return; // safety
-            // lock duplicates to final spot
-            const heroRect = hero.getBoundingClientRect();
+            if (!window.duplicateIcons) return;
+            // FINAL STAGE: animate images to corners + center
+            const finalProg = (p - STAGE_2_END) / (1 - STAGE_2_END); // 0..1
+            initFinalLayout();
             window.duplicateIcons.forEach((dup, i) => {
-              if (i < placeholderIcons.length) {
-                const endRect = placeholderIcons[i].getBoundingClientRect();
-                const endXRel = (endRect.left - heroRect.left) + (endRect.width - headerIconSize) / 2;
-                const endYRel = (endRect.top - heroRect.top) + (endRect.height - headerIconSize) / 2;
-                gsap.set(dup, { left: `${endXRel}px`, top: `${endYRel}px`, transform: `scale(${headerIconSize / parseFloat(dup.dataset.startWidth!)} )` });
-              }
+              const startLeft = parseFloat(dup.dataset.startLeft!);
+              const startTop = parseFloat(dup.dataset.startTop!);
+              const target = imageFinalTargets[i];
+              if (!target) return;
+              const curLeft = gsap.utils.interpolate(startLeft, target.left, finalProg);
+              const curTop = gsap.utils.interpolate(startTop, target.top, finalProg);
+              const curScale = gsap.utils.interpolate(isMobile ? 1.02 : 1.05, target.scale, finalProg);
+              gsap.set(dup, { left: `${curLeft}px`, top: `${curTop}px`, transform: `scale(${curScale})` });
             });
-
-            const t = (p - STAGE_2_END) / (1 - STAGE_2_END); // 0 ->1
-            // start fade after 20% into stage 3 for extra delay
-            const fadeStart = 0.2;
-            const fadeProgress = t < fadeStart ? 0 : (t - fadeStart) / (1 - fadeStart);
-            textAnimationOrder.forEach((item, i) => {
-              const slotStart = i / textAnimationOrder.length;
-              const slotEnd = (i + 1) / textAnimationOrder.length;
-              const segT = gsap.utils.mapRange(slotStart, slotEnd, 0, 1, fadeProgress);
-              gsap.set(item.segment, { opacity: Math.max(0, Math.min(1, segT)) });
-            });
-
-            // (Reverted) End fade-out of duplicate icons removed per user request.
+            // reveal and place text around center once (after small threshold)
+            if (finalProg > 0.05) {
+              applyTextLayout();
+              const textReveal = (finalProg - 0.05) / 0.95; // 0..1
+              textAnimationOrder.forEach((item, idx) => {
+                const step = idx / textAnimationOrder.length;
+                const local = (textReveal - step) * textAnimationOrder.length;
+                const o = gsap.utils.clamp(0,1, local);
+                gsap.set(item.segment, { opacity: o });
+              });
+            }
           }
         }
       });
-
-  // Force a refresh once layout settles to ensure measurements are correct
-  requestAnimationFrame(() => ScrollTrigger.refresh());
-
-  return () => {
+      // Resize handler to re-flow text groups after center image changes size/viewport
+      const handleResize = () => {
+        // Only attempt after duplicates (final stage) exist
+        if (!window.duplicateIcons) return;
+        // allow re-layout next time applyTextLayout runs
+        textLayoutDone = false;
+        applyTextLayout();
+      };
+      window.addEventListener('resize', handleResize);
+      
+      return () => {
         trigger.kill();
         if (window.duplicateIcons) {
           window.duplicateIcons.forEach(d => d.remove());
           window.duplicateIcons = null;
         }
-      };
-    }, []);
+        window.removeEventListener('resize', handleResize);
+      }
+  },[]);
+
 
   return (
     <>
@@ -258,18 +458,21 @@ export default function HeroAnimation() {
 
 
         {/* ANIMATED TEXT */}
-                <h1 id="animated-text" className='relative text-center text-cyan-700 leading-1'>
-            <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform invisible"></div>
-            <span className="dynamic-text text-4xl opacity-0">Whispers travel farther than names.</span>
-            <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform invisible"></div>
-            <span className="dynamic-text text-4xl opacity-0">Secrets feel lighter when shared.</span>
-            <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform invisible"></div>
-            <span className="dynamic-text text-4xl opacity-0">Silence breaks—identity stays hidden.</span>
-            <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform invisible"></div>
-            <span className="dynamic-text text-4xl opacity-0">Anonymous voices still carry truth.</span>
-            <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform invisible"></div>
-            <span className="dynamic-text text-4xl opacity-0">Your thoughts. No spotlight. Just expression.</span>
-        </h1>
+        <h1 id="animated-text" className='relative text-center text-cyan-700 leading-1'>
+      {/* Reordered so each placeholder (image target) appears AFTER its text segment */}
+  <span className="dynamic-text text-2xl sm:text-4xl opacity-0 mr-2 inline-block leading-tight">Whispers travel farther than names.</span>
+      <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform mx-1 invisible"></div>
+
+  <span className="dynamic-text text-2xl sm:text-4xl opacity-0 mr-2 inline-block leading-tight">Secrets feel lighter when shared.</span>
+      <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform mx-1 invisible"></div>
+
+  <span className="dynamic-text text-2xl sm:text-4xl opacity-0 mr-2 inline-block leading-tight">Silence breaks—identity stays hidden.</span>
+      <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform mx-1 invisible"></div>
+
+  <span className="dynamic-text text-2xl sm:text-4xl opacity-0 mr-2 inline-block leading-tight">Anonymous voices still carry truth.</span>
+      <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform mx-1 invisible"></div>
+
+    </h1>
 
     </section>
     <section id="outro" className='h-svh min-h-screen flex flex-col items-center justify-center px-6 text-center gap-4'>

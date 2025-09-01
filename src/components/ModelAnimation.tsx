@@ -57,8 +57,22 @@ export default function ModelAnimation() {
 
     // DOM-only animations (run after mount)
     try {
-      
-      // setup ScrollTrigger to move models
+      const textSegments = document.querySelectorAll("#text-segment");
+      const textAnimationOrder: { segment: Element; originalIndex: number }[] = [];
+      textSegments.forEach((segment, index) => textAnimationOrder.push({ segment, originalIndex: index }));
+
+      // shuffle
+      for (let i = textAnimationOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [textAnimationOrder[i], textAnimationOrder[j]] = [textAnimationOrder[j], textAnimationOrder[i]];
+      }
+
+      // animate shuffled order and keep references for cleanup
+      textAnimationOrder.forEach((item, i) => {
+        const t = gsap.fromTo(item.segment, { opacity: 0 }, { opacity: 1, duration: 1, delay: i * 0.5 });
+        tweens.push(t);
+      });
+      // setup ScrollTrigger to move model wrappers to corners when scrolled down one viewport
       try {
         const wrappers = Array.from(document.querySelectorAll('.model-wrapper')) as HTMLElement[];
         if (wrappers.length >= 4) {
@@ -84,15 +98,14 @@ export default function ModelAnimation() {
           const moveToCorners = () => {
             const w = window.innerWidth;
             const h = window.innerHeight;
-            const padding = wrappers[0].getBoundingClientRect().width;
+            const padding = 24;
             // targets for each wrapper
-            const groupWidth = padding * wrappers.length;
-            const startLeft = (w - groupWidth) / 2;
-            const topPos = (h - padding) / 2;
-            const targets = wrappers.map((_, i) => ({
-              left: startLeft + i * padding,
-              top: topPos
-            }));
+            const targets = [
+              { left: padding, top: padding }, // TL
+              { left: w - originals[1].width - padding, top: padding }, // TR
+              { left: padding, top: h - originals[2].height - padding }, // BL
+              { left: w - originals[3].width - padding, top: h - originals[3].height - padding } // BR
+            ];
 
             wrappers.forEach((el, i) => {
               const o = originals[i];
@@ -126,7 +139,7 @@ export default function ModelAnimation() {
           const st = ScrollTrigger.create({
             trigger: '#hero',
             start: 'top top',
-            end: () => `+=${window.innerWidth}`,
+            end: () => `+=${window.innerHeight}`,
             onEnter: moveToCorners,
             onLeaveBack: restore
           });
@@ -154,55 +167,53 @@ export default function ModelAnimation() {
 
   return (
     <>
-    <section id="hero" className="relative w-screen h-svh p-1 sm:mt-0 mt-6 flex flex-col items-center justify-center self-center bg-black overflow-hidden transition duration-300 ease-in-out">
+    <section id="hero" className="relative w-fit h-svh p-1 sm:mt-0 mt-6 flex flex-col items-center justify-center bg-black overflow-hidden transition duration-300 ease-in-out">
       <div>
-        <h1
-          id="hero-header"
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-7xl sm:text-7xl lg:text-9xl font-bold text-center"
-        >
-          Anon DMs
-        </h1>
-        <p className="text-white">A place for anonymous messaging!</p>
+        <h1 id="hero-header" className="absolute top-1/3 left-1/2 transform -translate-y-1/2 text-center flex flex-col gap-4">Anon DMs</h1>
+        <p>A place for anonymous messaging!</p>
       </div>
 
-      <div id="models" className="fixed bottom-4 left-4 right-4 flex sm:flex-row h-fit items-center justify-center align-middle content-center sm:gap-8 gap-0 px-4 z-2">
+      <div id="models" className="fixed bottom-4 left-4 right-4 flex flex-row h-fit items-center justify-center align-middle content-center gap-8 px-4 z-2">
 
           {/* CAT */}
-          <div className="border sm:w-50 sm:h-50 w-25 h-25 model-wrapper">
+          <div className="border w-50 h-50 model-wrapper">
           <Canvas>
         <Suspense fallback={null}>
           <Cat position={[-1, -17, -5]} scale={3.6} />
+          <OrbitControls />
           <Environment preset="warehouse" />
         </Suspense>
       </Canvas>
           </div>
 
-          {/* DOG */}
-          <div className="border sm:w-50 sm:h-50 w-25 h-25 model-wrapper">
+          <div className="border w-50 h-50 model-wrapper">
           <Canvas>
         <Suspense fallback={null}>
           <Dog position={[0, -3, -5]} scale={3.6} />
+          <OrbitControls />
           <Environment preset="warehouse" />
         </Suspense>
       </Canvas>
           </div>
 
-          {/* PENGUIN */}
-          <div className="border sm:w-50 sm:h-50 w-25 h-25 model-wrapper">
+
+          <div className="border w-50 h-50 model-wrapper">
           <Canvas>
         <Suspense fallback={null}>
           <Penguin position={[0, -4, -8]} scale={3.6} />
+          <OrbitControls />
           <Environment preset="warehouse" />
         </Suspense>
       </Canvas>
           </div>
 
 
-          {/* SLIME */}
-          <div className="border sm:w-50 sm:h-50 w-25 h-25 model-wrapper">
+
+          <div className="border w-50 h-50 model-wrapper">
           <Canvas>
         <Suspense fallback={null}>
           <Slime position={[0, -15, -308]} scale={3.6} />
+          <OrbitControls />
           <Environment preset="warehouse" />
         </Suspense>
       </Canvas>
@@ -212,7 +223,7 @@ export default function ModelAnimation() {
 
          </div>
 
-    {/* <h1 className="relative max-w-250 text-center text-4xl line-clamp-2 sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 animate-gradient-x mt-10">
+    <h1 className="relative max-w-250 text-center text-4xl line-clamp-2 sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 animate-gradient-x mt-10">
 
         <div id="placeholder" className="-mt-3 w-15 h-15 align-middle focus-visible:hidden">Curious marmot explores hidden valley.</div>
         <span id="text-segment">Silent comets trace silver arcs.</span>
@@ -225,11 +236,9 @@ export default function ModelAnimation() {
 
         <div id="placeholder">Midnight lantern guides wandering fireflies.</div>
         <span id="text-segment">Velvet clouds cradle early sunrise.</span>
-    </h1> */}
-
+    </h1>
 
     </section>
-
 
     <section id="outro">
       <h1>BYEEEEEE</h1>
