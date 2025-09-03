@@ -8,17 +8,17 @@ function Navbar() {
         <>
             <div className="fixed top-0 left-0 right-0 z-50 grid grid-cols-3 justify-center place-items-center px-2 border mt-2 py-2 mx-2 bg-transparent rounded-3xl shadow backdrop-blur-2xl duration-500 sm:h-fit h-[60px]">
                 <div className="flex flex-col md:block justify-self-start items-start gap-2 sm:h-fit h-[60px]">
-                    <Button className="bg-cyan-400 rounded-2xl px-3 py-1 text-black hover:bg-amber-400 hover:font-bold duration-300 ml-2">
+                    <Button className="bg-[rgba(28,42,50,0.82)] rounded-2xl px-3 py-1 text-[rgba(228,243,246,0.95)] hover:bg-[rgba(40,60,72,0.9)] hover:font-semibold duration-300 ml-2">
                     <Navigation href="/" label="Home" className="" />
                     </Button>
                 </div>
 
                 <div className="flex items-center justify-center col-span-1 self-stretch h-fit">
-                    <h1 className="text-2xl whitespace-nowrap bg-cyan-400 rounded-2xl w-fit py-1 px-4">Anon DMs</h1>
+                    <h1 className="text-2xl whitespace-nowrap bg-[rgba(28,42,50,0.82)] text-[rgba(228,243,246,0.95)] rounded-2xl w-fit py-1 px-4 font-semibold">Anon DMs</h1>
                 </div>
 
                 <div className="flex flex-col md:block justify-self-end items-end gap-2 sm:h-fit h-[60px]">
-                    <Button className="bg-cyan-400 rounded-2xl px-3 py-1 text-black hover:bg-amber-400 hover:font-bold duration-300 mr-2">
+                    <Button className="bg-[rgba(28,42,50,0.82)] rounded-2xl px-3 py-1 text-[rgba(228,243,246,0.95)] hover:bg-[rgba(40,60,72,0.9)] hover:font-semibold duration-300 mr-2">
                     <Navigation href="/signup" label="Sign up" className="" />
                     </Button>
                 </div>

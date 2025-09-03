@@ -86,7 +86,7 @@ function DashNavbar() {
             {/* REPLACE WITH ACCEPT MESSAGES TOGGLE BUTTON */}
             <div className="flex flex-col md:block justify-self-end justify-end items-end gap-2">
               
-              <Button variant="outline" className="justify-center bg-cyan-400 rounded-2xl ml-auto hover:bg-blue-400 mr-2 sm:text-nowrap text-wrap cursor-pointer">
+              <Button variant="outline" className="justify-center bg-cyan-400 rounded-2xl ml-auto hover:bg-blue-400 mr-3 sm:text-nowrap text-wrap cursor-pointer">
                 Accept DMs
               </Button>
 

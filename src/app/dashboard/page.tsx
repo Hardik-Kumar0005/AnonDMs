@@ -64,16 +64,14 @@ React.useEffect(() => {
 
 
   return (
-    <div className=' bg-amber-400 border-8 border-cyan-700'>
-      
-     <Navbar />
-
+    <div className="relative rounded-4xl bg-gradient-to-tl from-amber-300 to-cyan-400">
+      <Navbar />
       <Image
       src="/dashDoddle.png"
       alt="Background"
-      layout="fill"
-      objectFit="cover"
-      className="z-0"
+      fill
+      priority
+      className="object-cover pointer-events-none select-none"
       />
       <div className='fixed left-1/2 transform -translate-x-1/2'>
       <Image draggable="false" style={{

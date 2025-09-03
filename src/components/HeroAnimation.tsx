@@ -5,6 +5,10 @@ import Image from 'next/image'
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
 import Lenis from 'lenis';
+import { Comic_Relief } from 'next/font/google';
+import { Weight } from 'lucide-react';
+
+const comicRelief = Comic_Relief({weight: ["700"]});
 
 // Extend window type to include duplicateIcons
 declare global {
@@ -37,6 +41,9 @@ export default function HeroAnimation() {
       const header = document.getElementById("hero-header");
       const images = document.getElementById("images");
       if (!hero || !header || !images) return;
+
+      // Set initial background class
+      document.body.classList.add('bg-hero');
 
       // Measure navbar (assumes a <nav> element exists in layout)
       const navEl = document.querySelector('nav');
@@ -71,7 +78,7 @@ export default function HeroAnimation() {
       }
 
   const textSegments = document.querySelectorAll<HTMLElement>(".dynamic-text");
-  const placeholderIcons = document.querySelectorAll<HTMLElement>(".placeholder-icon"); // kept (unused now) for minimal DOM diff
+  const placeholderIcons = document.querySelectorAll<HTMLElement>(".placeholder-icon"); 
   const textContainer = textSegments[0]?.parentElement;
       const headerIconSize = isMobile ? 45 : 90;
       
@@ -334,7 +341,6 @@ export default function HeroAnimation() {
             gsap.set(images, { opacity: 0 });
 
             if (window.duplicateIcons) {
-              // gently scale up all while preparing
               window.duplicateIcons.forEach((dup) => {
                 const startWidth = parseFloat(dup.dataset.startWidth!);
                 const currentScale = gsap.utils.interpolate(1, 1.05, t);
@@ -382,6 +388,17 @@ export default function HeroAnimation() {
       };
       window.addEventListener('resize', handleResize);
       
+      // Background swap when outro enters viewport (after pinned hero)
+      const outro = document.getElementById('outro');
+      if (outro) {
+        ScrollTrigger.create({
+          trigger: outro,
+          start: 'top center',
+          onEnter: () => { document.body.classList.remove('bg-hero'); document.body.classList.add('bg-outro'); },
+          onLeaveBack: () => { document.body.classList.remove('bg-outro'); document.body.classList.add('bg-hero'); }
+        });
+      }
+
       return () => {
         trigger.kill();
         if (window.duplicateIcons) {
@@ -389,6 +406,7 @@ export default function HeroAnimation() {
           window.duplicateIcons = null;
         }
         window.removeEventListener('resize', handleResize);
+        document.body.classList.remove('bg-hero','bg-outro');
       }
   },[]);
 
@@ -397,8 +415,8 @@ export default function HeroAnimation() {
     <>
     <section id="hero-section" className='relative flex flex-col w-screen h-lvh overflow-hidden items-center justify-center transition-colors duration-300'>
       <div id="hero-header" className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col text-center gap-4 will-change-transform flex-nowrap text-nowrap">
-                <h1 className="text-6xl sm:text-9xl font-bold">ANON DMs</h1>
-                <p className="text-lg">Share your thoughts anonymously</p>
+                <h1 className={`text-6xl sm:text-9xl font-bold text-shadow-red-500 ${comicRelief.className}`}>ANON DMs</h1>
+                <p className={`text-lg ${comicRelief.className}`}>Share your thoughts anonymously</p>
         </div>
 
         {/* IMAGES */}
@@ -416,7 +434,7 @@ export default function HeroAnimation() {
 
       <div className="relative flex-shrink-0 w-[min(200px,20vw)] h-[min(200px,20vw)]">
               <Image
-                src="/img2.jpg"
+                src="/img2.png"
                 alt="Hero Image 2"
                 fill
         sizes="(min-width:1024px) 200px, 20vw"
