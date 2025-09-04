@@ -64,7 +64,7 @@ React.useEffect(() => {
 
 
   return (
-    <div className="relative rounded-4xl bg-gradient-to-tl from-amber-300 to-cyan-400">
+    <div className="relative rounded-4xl bg-gradient-to-tl from-stone-500 to-emerald-600">
       <Navbar />
       <Image
       src="/dashDoddle.png"

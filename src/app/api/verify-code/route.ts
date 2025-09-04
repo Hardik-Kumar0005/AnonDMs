@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
         // Verify the code (this is just a placeholder, implement your own logic)
         const isValidCode = user.verifyCode === code; 
-        const isNotExpired = new Date(user.verifyCodeExpiry) > new Date();
+        const isNotExpired = new Date(user.verifyCodeExpiry as Date) > new Date();
 
         if (isValidCode && isNotExpired) {
             await prisma.user.update({

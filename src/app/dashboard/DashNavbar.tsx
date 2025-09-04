@@ -8,6 +8,7 @@ import { animatePageIn } from "@/utils/animation";
 import { motion } from 'motion/react';
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,20 +27,69 @@ import { ApiResponse } from "@/types/ApiResponse";
 
 function DashNavbar() {
     const { data: session } = useSession();
-    const user:User = session?.user as User;
+    const user: User = session?.user as User;
+    const [isAcceptingMessages, setIsAcceptingMessages] = useState<boolean>(false);
+    const [isToggling, setIsToggling] = useState<boolean>(false);
+
+    // Fetch current accept messages status
+    useEffect(() => {
+        const fetchAcceptMessagesStatus = async () => {
+            if (session?.user) {
+                try {
+                    const response = await axios.get<any>('/api/accept-message');
+                    if (response.data.success) {
+                        setIsAcceptingMessages(response.data.isAcceptingMessages);
+                    }
+                } catch (error) {
+                    console.error('Error fetching accept messages status:', error);
+                    toast.error('Failed to fetch message settings');
+                }
+            }
+        };
+        fetchAcceptMessagesStatus();
+    }, [session]);
+
+    // Toggle accept messages function
+    const toggleAcceptMessages = async () => {
+        if (isToggling) return; // Prevent multiple requests
+        
+        setIsToggling(true);
+        try {
+            const response = await axios.post<ApiResponse>('/api/accept-message', {
+                acceptMessages: !isAcceptingMessages
+            });
+            
+            if (response.data.success) {
+                setIsAcceptingMessages(!isAcceptingMessages);
+                toast.success(`Messages ${!isAcceptingMessages ? 'enabled' : 'disabled'} successfully`);
+            } else {
+                toast.error(response.data.message || 'Failed to update settings');
+            }
+        } catch (error) {
+            console.error('Error toggling accept messages:', error);
+            toast.error('Failed to update message settings');
+        } finally {
+            setIsToggling(false);
+        }
+    };
+
     const deleteAll = async () => {
-    try {
-      const response = await axios.delete<ApiResponse>(`/api/delete-all-messages/`);
-    } catch (error) {
-      console.error("Error deleting message:", error);
-    }
-  }
+        try {
+            const response = await axios.delete<ApiResponse>(`/api/delete-all-messages/`);
+            if (response.data.success) {
+                toast.success('All messages deleted successfully');
+            }
+        } catch (error) {
+            console.error("Error deleting message:", error);
+            toast.error('Failed to delete messages');
+        }
+    };
 
   return (
     <div className="sticky top-0 left-0 right-0 z-50 grid grid-cols-3 justify-center place-items-center px-2 py-2 bg-transparent backdrop-blur-3xl rounded-3xl">
-              <div className="flex flex-col md:block justify-self-start justify-start items-start gap-2">
+              <div className="flex sm:flex-row flex-col md:flex-row justify-self-start justify-start items-center sm:gap-0 gap-2">
               
-              <Button variant="outline" className="bg-cyan-400 rounded-2xl ml-auto hover:bg-white mr-2 sm:text-nowrap text-wrap">
+              <Button variant="outline" className="bg-cyan-400 rounded-2xl ml-auto hover:bg-white sm:mr-0 mr-6 sm:text-nowrap text-wrap">
                 <Navigation href="/" label="Home" className="" />
               </Button>
 
@@ -83,16 +133,37 @@ function DashNavbar() {
             </h1>
 
 
-            {/* REPLACE WITH ACCEPT MESSAGES TOGGLE BUTTON */}
-            <div className="flex flex-col md:block justify-self-end justify-end items-end gap-2">
+            {/* ACCEPT MESSAGES TOGGLE BUTTON */}
+            <div className="flex sm:flex-row flex-col md:flex-row justify-self-end justify-end items-center gap-2">
               
-              <Button variant="outline" className="justify-center bg-cyan-400 rounded-2xl ml-auto hover:bg-blue-400 mr-3 sm:text-nowrap text-wrap cursor-pointer">
-                Accept DMs
+              <Button 
+                variant="outline" 
+                onClick={toggleAcceptMessages}
+                disabled={isToggling}
+                className={`justify-center rounded-2xl cursor-pointer transition-all duration-200 ${
+                  isAcceptingMessages 
+                    ? 'bg-green-400 hover:bg-green-500 text-green-900' 
+                    : 'bg-red-400 hover:bg-red-500 text-red-900'
+                } ${isToggling ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+              >
+                {isToggling ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-3 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                    Wait...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1">
+                    <div className={` ${
+                      isAcceptingMessages ? 'bg-green-700' : 'bg-red-700'
+                    }`}></div>
+                    {isAcceptingMessages ? 'Open DMs' : 'Closed DMs'}
+                  </span>
+                )}
               </Button>
 
               <Button 
                 variant="outline" 
-                className="justify-self-end bg-cyan-400 rounded-2xl hover:bg-red-400 active:bg-red-400 ml-2 mr-2 mt-1 md:mt-0 cursor-pointer hover:scale-110 hover:font-bold"
+                className="bg-cyan-400 rounded-2xl hover:bg-red-400 active:bg-red-400 cursor-pointer hover:scale-110 hover:font-bold"
                 onClick={ () => signOut({ callbackUrl: '/' }) }>
                 <span className="font-medium">Logout</span>
               </Button>

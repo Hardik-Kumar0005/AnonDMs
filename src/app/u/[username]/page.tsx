@@ -12,6 +12,7 @@ import { toast } from 'sonner'
 import { messageSchema } from '@/schemas/messageSchema'
 import { usePathname, useParams } from 'next/navigation'
 import DashNavbar from '@/app/dashboard/DashNavbar'
+import { Cat } from 'lucide-react'
 
 type FormValues = z.infer<typeof messageSchema>
 
@@ -60,7 +61,7 @@ export default function Page() {
   const isLoggedIn = !!session?.user
 
   return (
-    <div className='bg-amber-400 border-8 border-black min-h-screen'>
+    <div className='bg-amber-400 border-8 border-black min-h-screen rounded-4xl'>
       {isLoggedIn ? ( <DashNavbar /> ) : (
         <Navbar />
       )}
@@ -74,10 +75,14 @@ export default function Page() {
       />
 
       <div className='w-screen min-h-screen flex flex-col p-6 justify-start mx-auto items-center pt-32'>
-        <div className='relative z-20 w-full max-w-5xl px-4'>
-          <h2 className='text-4xl font-bold mb-4'>Send a message to @{username}</h2>
+        <div className='relative z-20 w-full max-w-5xl px-4 flex flex-col items-center '>
+            {isLoggedIn ? <h2 className='text-4xl font-bold mb-4 flex items-center gap-2'>Sending a message to yourself? <Cat className='h-10 w-10' /></h2>
+          :
+           (
+        <h2 className='text-4xl font-bold mb-4'>Send a message to @{username}</h2>
+      )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className='w-full max-w-xl bg-white/80 p-6 rounded-lg border border-black' style={{ position: 'relative', zIndex: 30, pointerEvents: 'auto' }}>
+          <form onSubmit={handleSubmit(onSubmit)} className='w-full max-w-xl mt-4 bg-white/80 p-6 rounded-lg border border-black' style={{ position: 'relative', zIndex: 30, pointerEvents: 'auto' }}>
             <div className='mb-4'>
               <textarea
                 {...register('content')}

@@ -1,10 +1,17 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GitHubProvider from "next-auth/providers/github";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import prisma from  "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
+    adapter: PrismaAdapter(prisma),
     providers: [
+        GitHubProvider({
+            clientId: process.env.GITHUB_CLIENT_ID as string,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+        }),
         CredentialsProvider({
             id: "credentials",
             name: "Credentials",
@@ -31,7 +38,7 @@ export const authOptions: NextAuthOptions = {
                         throw new Error("You need to verify your account first! Check your email");
                     }
                     
-                    const isValid = await bcrypt.compare(credentials.password, user.password);
+                    const isValid = await bcrypt.compare(credentials.password, user.password as string);
                     if(!isValid) {
                         throw new Error("Invalid credentials");
                     }
@@ -43,6 +50,30 @@ export const authOptions: NextAuthOptions = {
             }
         })
     ],
+    events: {
+        async createUser({ user }) {
+            // This runs after a user is created via OAuth
+            if (user.email) {
+                try {
+                    await prisma.user.update({
+                        where: { id: user.id },
+                        data: {
+                            username: user.email.split('@')[0], // Generate username from email
+                            isVerified: true, // OAuth users are pre-verified
+                            isAcceptingMessages: true,
+                            messages: {
+                                create: [{
+                                    content: "Welcome to NGL!",
+                                }]
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error("Error updating new OAuth user:", error);
+                }
+            }
+        }
+    },
     callbacks: {
         async jwt({ token, user }) {
             if (user) {

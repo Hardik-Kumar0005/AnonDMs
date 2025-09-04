@@ -7,6 +7,8 @@ import { ScrollTrigger } from 'gsap/all';
 import Lenis from 'lenis';
 import { Comic_Relief } from 'next/font/google';
 import { Weight } from 'lucide-react';
+import { Button } from './ui/button';
+import Navigation from '@/utils/Navigation';
 
 const comicRelief = Comic_Relief({weight: ["700"]});
 
@@ -476,7 +478,7 @@ export default function HeroAnimation() {
 
 
         {/* ANIMATED TEXT */}
-        <h1 id="animated-text" className='relative text-center text-cyan-700 leading-1'>
+        <h1 id="animated-text" className='relative text-center text-black font-extrabold leading-1'>
       {/* Reordered so each placeholder (image target) appears AFTER its text segment */}
   <span className="dynamic-text text-2xl sm:text-4xl opacity-0 mr-2 inline-block leading-tight">Whispers travel farther than names.</span>
       <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform mx-1 invisible"></div>
@@ -496,6 +498,11 @@ export default function HeroAnimation() {
     <section id="outro" className='h-svh min-h-screen flex flex-col items-center justify-center px-6 text-center gap-4'>
       <h2 className="text-4xl sm:text-5xl font-bold">Join the Conversation</h2>
       <p className="text-lg max-w-2xl">Share your thoughts anonymously and connect with others.</p>
+      <div>
+        <Button size="lg" className="mt-12 bg-black hover:bg-cyan-700 hover:text-black text-white font-semibold transition-colors duration-300">
+          <Navigation href='/signup' label="Get Started" className='' />
+        </Button>
+      </div>
     </section>
     </>
   )
