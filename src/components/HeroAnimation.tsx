@@ -184,17 +184,21 @@ export default function HeroAnimation() {
     topGroup.innerHTML = '';
     bottomGroup.innerHTML = '';
 
-    const gap = (window.matchMedia('(max-width: 768px)').matches) ? 8 : 14;
+    const gap = (window.matchMedia('(max-width: 768px)').matches) ? 4 : 14;
 
     // Assign first 2 to top, remaining to bottom
     textSegments.forEach((seg, i) => {
-      seg.style.whiteSpace = 'nowrap';
+      // Allow wrapping on mobile for better text flow
+      seg.style.whiteSpace = isMobile ? 'normal' : 'nowrap';
       seg.style.display = 'inline-block';
       seg.style.marginRight = i === 1 || i === textSegments.length-1 ? '0' : `${gap}px`;
+      seg.style.maxWidth = isMobile ? '100%' : 'none';
+      seg.style.wordBreak = isMobile ? 'break-word' : 'normal';
       if (i < 2) topGroup!.appendChild(seg); else bottomGroup!.appendChild(seg);
     });
 
     // Style groups (inline items; wrap if overflow) and position
+    const maxWidthPercent = isMobile ? '95%' : '90%';
     [topGroup, bottomGroup].forEach(g => {
       if (!g) return;
       Object.assign(g.style, {
@@ -206,7 +210,7 @@ export default function HeroAnimation() {
         alignItems: 'center',
         justifyContent: 'center',
         gap: `${gap}px`,
-        maxWidth: '90%',
+        maxWidth: maxWidthPercent,
         pointerEvents: 'none',
         textAlign: 'center'
       });
@@ -480,16 +484,16 @@ export default function HeroAnimation() {
         {/* ANIMATED TEXT */}
         <h1 id="animated-text" className='relative text-center text-black font-extrabold leading-1'>
       {/* Reordered so each placeholder (image target) appears AFTER its text segment */}
-  <span className="dynamic-text text-2xl sm:text-4xl opacity-0 mr-2 inline-block leading-tight">Whispers travel farther than names.</span>
+  <span className="dynamic-text text-xs sm:text-base md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl opacity-0 mr-2 inline-block leading-tight">Whispers travel farther than names.</span>
       <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform mx-1 invisible"></div>
 
-  <span className="dynamic-text text-2xl sm:text-4xl opacity-0 mr-2 inline-block leading-tight">Secrets feel lighter when shared.</span>
+  <span className="dynamic-text text-xs sm:text-base md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl opacity-0 mr-2 inline-block leading-tight">Secrets feel lighter when shared.</span>
       <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform mx-1 invisible"></div>
 
-  <span className="dynamic-text text-2xl sm:text-4xl opacity-0 mr-2 inline-block leading-tight">Silence breaks—identity stays hidden.</span>
+  <span className="dynamic-text text-xs sm:text-base md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl opacity-0 mr-2 inline-block leading-tight">Silence breaks—identity stays hidden.</span>
       <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform mx-1 invisible"></div>
 
-  <span className="dynamic-text text-2xl sm:text-4xl opacity-0 mr-2 inline-block leading-tight">Anonymous voices still carry truth.</span>
+  <span className="dynamic-text text-xs sm:text-base md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl opacity-0 mr-2 inline-block leading-tight">Anonymous voices still carry truth.</span>
       <div className="placeholder-icon -mt-10 w-15 h-15 inline-block align-middle will-change-transform mx-1 invisible"></div>
 
     </h1>

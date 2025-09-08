@@ -3,7 +3,7 @@
 import React, { Suspense } from 'react'
 import Image from 'next/image'
 import { motion } from 'motion/react'
-import { Tinos } from 'next/font/google';
+import { Comic_Relief } from 'next/font/google';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -19,7 +19,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Button } from '@/components/ui/button'
 import { signIn } from 'next-auth/react'
 
-const tinos = Tinos({ weight: ['400'], subsets: ['latin'] });
+const comicRelief = Comic_Relief({ weight: ['700'], subsets: ['latin'] });
 
 function page() {
   const [ username, setUsername ] = React.useState("");
@@ -94,7 +94,7 @@ function page() {
             animate={{ scale: 1 }}
             transition={{ duration: 1 }}
             className="inline-block rounded-full shadow-lg px-8 py-4 mb-6 border-2 border-black">
-            <h1 className={`text-6xl font-extrabold tracking-tight lg:text-8xl text-gray-800 ${tinos.className}`}>
+            <h1 className={`text-6xl font-extrabold tracking-tight lg:text-8xl text-black ${comicRelief.className}`}>
               Anon DMs
             </h1>
             </motion.div>
@@ -195,9 +195,6 @@ function page() {
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-gray-300" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-cyan-800/60 px-2 text-gray-500">Or continue with</span>
-        </div>
       </div>
 
       {/* GitHub Sign Up Button */}
@@ -232,11 +229,11 @@ function page() {
               height={50}
               />
             </div>
-          <p className={`text-gray-600 text-2xl font-${400} ${tinos.className}`}>
+          <p className={`text-gray-600 text-2xl font-${400} ${comicRelief.className}`}>
             Already have an account?{' '}
             <br />
             <button>
-              <Navigation href="/signin" label="Sign in" className="text-3xl text-blue-600 hover:text-amber-400 hover:scale-110 hover:bg-cyan-700 duration-300 rounded-4xl p-2" />
+              <Navigation href="/signin" label="Sign in" className="text-3xl text-amber-600 hover:text-amber-400 hover:scale-110 hover:bg-cyan-700 duration-300 rounded-4xl p-2" />
             </button>
           </p>
         </div>

@@ -20,26 +20,26 @@ const IntroAnimation: React.FC = () => {
     <>
       <div
         id="b1"
-        className="fixed inset-x-0 top-0 z-10 h-1/4 bg-gradient-to-br from-gray-900 to-cyan-800 border-8 border-black rounded-br-4xl"
+        className="fixed inset-x-0 top-0 z-10 h-1/4 bg-cyan-600 border-8 border-black rounded-br-4xl"
         style={{ willChange: 'transform', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
       />
       <div
         id="b2"
-        className="fixed inset-x-0 top-1/4 z-10 h-1/4 bg-gradient-to-r from-gray-900 to-cyan-800 flex items-center justify-center border-8 border-black rounded-r-4xl"
+        className="fixed inset-x-0 top-1/4 z-10 h-1/4 bg-amber-400 flex items-center justify-center border-8 border-black rounded-r-4xl"
         style={{ willChange: 'transform', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
       >
-        <div className={`${dynaPuff.className} text-7xl md:text-9xl font-extrabold select-none text-white`}>Anon</div>
+        <div className={`${dynaPuff.className} text-7xl md:text-9xl font-extrabold select-none text-black`}>Anon</div>
       </div>
       <div
         id="b3"
-        className="fixed inset-x-0 top-1/2 z-10 h-1/4 bg-gradient-to-r from-gray-900 to-cyan-800 flex items-center justify-center border-8 border-black rounded-r-4xl text-white"
+        className="fixed inset-x-0 top-1/2 z-10 h-1/4 bg-amber-400 flex items-center justify-center border-8 border-black rounded-r-4xl text-white"
         style={{ willChange: 'transform', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
       >
-        <div className={`${dynaPuff.className} text-7xl md:text-9xl font-extrabold select-none`}>DMs</div>
+        <div className={`${dynaPuff.className} text-7xl md:text-9xl font-extrabold text-black select-none`}>DMs</div>
       </div>
       <div
         id="b4"
-        className="fixed inset-x-0 top-3/4 z-10 h-1/4 bg-gradient-to-tl from-gray-900 to-cyan-800 border-8 border-black rounded-tr-4xl text-white"
+        className="fixed inset-x-0 top-3/4 z-10 h-1/4 bg-cyan-600 border-8 border-black rounded-tr-4xl text-white"
         style={{ willChange: 'transform', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
       />
     </>

@@ -14,10 +14,10 @@ import { signInSchema } from '@/schemas/signInSchema';
 import { animatePageIn, animatePageOut } from '@/utils/animation';
 import { motion, Variants } from 'motion/react';
 import Image from 'next/image';
-
-import { Tinos } from 'next/font/google';
 import Navigation from '@/utils/Navigation';
-const tinos = Tinos({ weight: ['400'], subsets: ['latin'] });
+
+import { Comic_Relief } from 'next/font/google';
+const comicRelief = Comic_Relief({ weight: ['700'], subsets: ['latin'] });
 
 function page() {
   const form = useForm({
@@ -65,7 +65,7 @@ function page() {
             animate={{ scale: 1 }}
             transition={{ duration: 1 }}
             className="inline-block rounded-full shadow-lg px-8 py-4 mb-6 border-2 border-black">
-            <h1 className={`text-6xl font-extrabold tracking-tight lg:text-8xl text-gray-800 ${tinos.className}`}>
+            <h1 className={`text-6xl font-extrabold tracking-tight lg:text-8xl text-black ${comicRelief.className}`}>
               Anon DMs
             </h1>
             </motion.div>
@@ -146,11 +146,11 @@ function page() {
               height={50}
               />
             </div>
-          <p className={`text-gray-600 text-2xl font-${400} ${tinos.className}`}>
+          <p className={`text-gray-600 text-2xl font-${400} ${comicRelief.className}`}>
             Don't have an account?{' '}
             <br />
             <button>
-              <Navigation href="/signup" label="Sign up" className="text-3xl text-blue-600 hover:text-amber-400 hover:scale-110 hover:bg-cyan-700 duration-300 rounded-4xl p-2" />
+              <Navigation href="/signup" label="Sign up" className="text-3xl text-amber-600 hover:text-amber-400 hover:scale-110 hover:bg-cyan-700 duration-300 rounded-4xl p-2" />
             </button>
           </p>
         </div>

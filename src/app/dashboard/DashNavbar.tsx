@@ -86,7 +86,7 @@ function DashNavbar() {
     };
 
   return (
-    <div className="sticky top-0 left-0 right-0 z-50 grid grid-cols-3 justify-center place-items-center px-2 py-2 bg-transparent backdrop-blur-3xl rounded-3xl">
+    <div className="sticky top-0 left-0 right-0 z-50 grid grid-cols-3 justify-center place-items-center px-2 py-2 bg-transparent rounded-3xl">
               <div className="flex sm:flex-row flex-col md:flex-row justify-self-start justify-start items-center sm:gap-0 gap-2">
               
               <Button variant="outline" className="bg-cyan-400 rounded-2xl ml-auto hover:bg-white sm:mr-0 mr-6 sm:text-nowrap text-wrap">

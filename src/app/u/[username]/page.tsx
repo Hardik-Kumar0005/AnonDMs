@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 import { messageSchema } from '@/schemas/messageSchema'
 import { usePathname, useParams } from 'next/navigation'
 import DashNavbar from '@/app/dashboard/DashNavbar'
-import { Cat } from 'lucide-react'
+import { Cat, Sparkles, RefreshCw } from 'lucide-react'
 
 type FormValues = z.infer<typeof messageSchema>
 
@@ -29,9 +29,12 @@ export default function Page() {
   const username = usernameFromPath || params?.username || ''
 
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [suggestions, setSuggestions] = React.useState<string[]>([])
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = React.useState(false)
+  const [showSuggestions, setShowSuggestions] = React.useState(false)
 
   const form = useForm<FormValues>({ resolver: zodResolver(messageSchema) })
-  const { register, handleSubmit, reset, formState: { errors } } = form
+  const { register, handleSubmit, reset, formState: { errors }, setValue } = form
 
   const onSubmit = async (data: FormValues) => {
     if (!username) {
@@ -57,6 +60,51 @@ export default function Page() {
     }
   }
 
+  // Function to fetch AI suggestions
+  const fetchSuggestions = async () => {
+    setIsLoadingSuggestions(true)
+    try {
+      const response = await fetch('/api/suggest-messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch suggestions')
+      }
+      
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+      let result = ''
+      
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          result += decoder.decode(value)
+        }
+      }
+      
+      // Split the result by || to get individual suggestions
+      const suggestionsArray = result.split('||').map(s => s.trim()).filter(s => s.length > 0)
+      setSuggestions(suggestionsArray)
+      setShowSuggestions(true)
+    } catch (error) {
+      console.error('Error fetching suggestions:', error)
+      toast.error('Failed to load suggestions')
+    } finally {
+      setIsLoadingSuggestions(false)
+    }
+  }
+
+  // Function to handle suggestion click
+  const handleSuggestionClick = (suggestion: string) => {
+    setValue('content', suggestion)
+    setShowSuggestions(false)
+  }
+
   const { data: session } = useSession()
   const isLoggedIn = !!session?.user
 
@@ -65,6 +113,14 @@ export default function Page() {
       {isLoggedIn ? ( <DashNavbar /> ) : (
         <Navbar />
       )}
+
+      <Image
+            src="/dashBg.jpg"
+            alt="Background"
+            fill
+            priority
+            className="object-cover pointer-events-none select-none rounded-4xl opacity-80"
+            />
 
       <Image
         src={'/dashDoddle.png'}
@@ -82,12 +138,66 @@ export default function Page() {
         <h2 className='text-4xl font-bold mb-4'>Send a message to @{username}</h2>
       )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className='w-full max-w-xl mt-4 bg-white/80 p-6 rounded-lg border border-black' style={{ position: 'relative', zIndex: 30, pointerEvents: 'auto' }}>
+          {/* AI Suggestions Section */}
+          <div className='w-full max-w-xl mb-4'>
+            <div className='flex items-center justify-between mb-3'>
+              <button
+                type='button'
+                onClick={fetchSuggestions}
+                disabled={isLoadingSuggestions}
+                className='flex items-center gap-2 bg-cyan-400 text-black px-4 py-2 rounded-2xl hover:bg-purple-500 disabled:opacity-50 transition-colors border-2 border-black'
+                style={{ position: 'relative', zIndex: 30, pointerEvents: 'auto' }}
+              >
+                {isLoadingSuggestions ? (
+                  <RefreshCw className='h-4 w-4 animate-spin' />
+                ) : (
+                  <Sparkles className='h-4 w-4' />
+                )}
+                {isLoadingSuggestions ? 'Getting ideas...' : 'Get AI suggestions'}
+              </button>
+              
+              {showSuggestions && suggestions.length > 0 && (
+                <button
+                  type='button'
+                  onClick={() => setShowSuggestions(!showSuggestions)}
+                  className='text-sm text-black hover:text-gray-800 underline'
+                  style={{ position: 'relative', zIndex: 30, pointerEvents: 'auto' }}
+                >
+                  {showSuggestions ? 'Hide suggestions' : 'Show suggestions'}
+                </button>
+              )}
+            </div>
+            
+            {/* Suggestions List */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className='bg-transparent border-2 border-black rounded-lg p-4 mb-4' style={{ position: 'relative', zIndex: 30, pointerEvents: 'auto' }}>
+                <h3 className='text-lg font-semibold mb-3 flex items-center gap-2'>
+                  <Sparkles className='h-4 w-4' />
+                  AI Suggested Messages
+                </h3>
+                <div className='space-y-2'>
+                  {suggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      type='button'
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      className='w-full text-left p-3 bg-cyan-400 border-2 rounded-lg hover:bg-cyan-100 hover:border-cyan-400 transition-colors text-sm'
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+                <p className='text-xs text-black mt-2'>Click any suggestion to use it as your message</p>
+              </div>
+            )}
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className='w-full max-w-xl mt-4 bg-transparent p-6 rounded-lg border border-black' style={{ position: 'relative', zIndex: 30, pointerEvents: 'auto' }}>
             <div className='mb-4'>
               <textarea
                 {...register('content')}
                 rows={4}
-                className='w-full p-3 border-2 border-black rounded resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500'
+                className='w-full p-3 border-2 bg-cyan-300/40 border-black rounded resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500'
                 placeholder='Write your anonymous message here...'
               />
               {errors.content && <p className='text-red-600 mt-2'>{(errors.content as any).message}</p>}
@@ -97,11 +207,11 @@ export default function Page() {
               <button
                 type='submit'
                 disabled={isSubmitting}
-                className='bg-cyan-400 px-4 py-2 rounded-2xl text-black hover:bg-amber-400 disabled:opacity-50'
+                className='bg-cyan-400 px-4 py-2 rounded-2xl text-black border-2 hover:bg-amber-400 disabled:opacity-50'
               >
                 {isSubmitting ? 'Sending...' : 'Send Message'}
               </button>
-              <p className='text-sm text-gray-700'>Messages are sent anonymously</p>
+              <p className='text-sm text-black'>Messages are sent anonymously</p>
             </div>
           </form>
         </div>

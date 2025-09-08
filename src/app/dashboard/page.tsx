@@ -64,7 +64,14 @@ React.useEffect(() => {
 
 
   return (
-    <div className="relative rounded-4xl bg-gradient-to-tl from-stone-500 to-emerald-600">
+    <div className="relative rounded-4xl bg-amber-400">
+      <Image
+      src="/dashBg.jpg"
+      alt="Background"
+      fill
+      priority
+      className="object-cover pointer-events-none select-none rounded-4xl opacity-80"
+      />
       <Navbar />
       <Image
       src="/dashDoddle.png"
