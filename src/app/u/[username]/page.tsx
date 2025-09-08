@@ -168,7 +168,7 @@ export default function Page() {
               )}
             </div>
             
-            {/* Suggestions List */}
+            {/* Suggestions List UI style*/}
             {showSuggestions && suggestions.length > 0 && (
               <div className='bg-transparent border-2 border-black rounded-lg p-4 mb-4' style={{ position: 'relative', zIndex: 30, pointerEvents: 'auto' }}>
                 <h3 className='text-lg font-semibold mb-3 flex items-center gap-2'>
