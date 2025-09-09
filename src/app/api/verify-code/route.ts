@@ -19,7 +19,6 @@ export async function POST(request: Request) {
             }, { status: 404 });
         }
 
-        // Verify the code (this is just a placeholder, implement your own logic)
         const isValidCode = user.verifyCode === code; 
         const isNotExpired = new Date(user.verifyCodeExpiry as Date) > new Date();
 

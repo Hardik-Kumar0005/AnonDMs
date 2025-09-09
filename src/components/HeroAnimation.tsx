@@ -115,7 +115,7 @@ export default function HeroAnimation() {
         const dups = window.duplicateIcons;
         if (!dups || dups.length < 5) return;
         // map indices: 0 TL,1 TR,2 center,3 BL,4 BR
-        const extraTopMargin = isMobile ? 32 : 64; // pushes images further down
+        const extraTopMargin = isMobile ? 32 : 64; // PUSHES IMAGES MORE DOWN
         dups.forEach((dup, i) => {
           let w = dup.getBoundingClientRect().width;
           let h = dup.getBoundingClientRect().height;
@@ -131,12 +131,12 @@ export default function HeroAnimation() {
             }
           }
           if (i === centerIndex) {
-            // center but never above a safe band
+            // CENTER
             left = (heroRect.width - w * scale) / 2;
             const idealCenterTop = (heroRect.height - h * scale) / 2;
-            // ensure center isn't too high; clamp to at least (topOffset + 20)
+            // EXTRA OFFSET
             top = Math.max(idealCenterTop, topOffset + 20);
-            // also prevent bottom overflow
+            // prevent overflow
             const maxTop = heroRect.height - h * scale - pad;
             top = Math.min(top, maxTop);
           } else {
@@ -150,7 +150,7 @@ export default function HeroAnimation() {
           // Clamp horizontally in case scale pushes outside
           const maxLeft = heroRect.width - w * scale - sidePad;
           left = Math.min(Math.max(left, sidePad), maxLeft);
-          // Prevent overlap with navbar (mobile) for non-bottom rows
+          // Prevent overlap with navbar FOR MOBILE
           if (top < topOffset) top = topOffset;
           imageFinalTargets[i] = { left, top, scale };
         });
